@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlexSchedule - Intelligent Productivity & Daily Planner</title>
+    <title>FlexSchedule - Smart Productivity & Time Grid</title>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -14,47 +15,69 @@
                     colors: {
                         google: {
                             blue: '#1A73E8',
-                            hoverBlue: '#1557B0',
-                            bgLight: '#F8F9FA',
-                            cardLight: '#FFFFFF',
-                            textDark: '#202124',
-                            textMuted: '#5F6368',
-                            borderLight: '#E0E0E0',
-                            darkBg: '#121212',
-                            darkSurface: '#1E1E1E',
-                            darkBorder: '#333333',
-                            darkText: '#E8EAED',
-                            darkMuted: '#9AA0A6'
-                        },
-                        cat: {
-                            academics: '#1A73E8',
-                            sports: '#1E8E3E',
-                            hobbies: '#A142F4',
-                            chores: '#F9AB00',
-                            work: '#6200EE',
-                            school: '#E52592'
+                            red: '#EA4335',
+                            yellow: '#FBBC04',
+                            green: '#34A853',
                         }
                     },
                     fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
+
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-            user-select: none;
+    <!-- React & React DOM & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Google Font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Dynamic Accent Root Styles -->
+    <style id="dynamic-accent-styles">
+        :root {
+            --primary: #1A73E8;
+            --primary-rgb: 26, 115, 232;
+            --primary-hover: #1557b0;
+            --primary-light: rgba(26, 115, 232, 0.12);
+            --primary-border: rgba(26, 115, 232, 0.3);
+            --primary-ring: rgba(26, 115, 232, 0.4);
         }
-        /* Custom smooth scrollbar */
+
+        .custom-accent-bg {
+            background-color: var(--primary) !important;
+        }
+
+        .custom-accent-text {
+            color: var(--primary) !important;
+        }
+
+        .custom-accent-border {
+            border-color: var(--primary) !important;
+        }
+
+        .custom-accent-light-bg {
+            background-color: var(--primary-light) !important;
+        }
+
+        .custom-accent-hover:hover {
+            background-color: var(--primary-hover) !important;
+        }
+
+        .custom-accent-ring:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px var(--primary-ring) !important;
+        }
+
+        /* Custom Scrollbar Styling */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -63,1434 +86,1356 @@
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(150, 150, 150, 0.3);
-            border-radius: 4px;
+            background: rgba(156, 163, 175, 0.4);
+            border-radius: 9999px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(150, 150, 150, 0.5);
+            background: rgba(156, 163, 175, 0.7);
         }
-        .dragging {
-            opacity: 0.4;
-            transform: scale(0.98);
+
+        .time-grid-bg {
+            background-size: 100% 48px;
+            background-image: linear-gradient(to bottom, rgba(229, 231, 235, 0.4) 1px, transparent 1px);
         }
-        .drag-over {
-            background-color: rgba(26, 115, 232, 0.08) !important;
-            border-style: dashed !important;
+
+        .dark .time-grid-bg {
+            background-image: linear-gradient(to bottom, rgba(55, 65, 81, 0.4) 1px, transparent 1px);
         }
-        .dark .drag-over {
-            background-color: rgba(26, 115, 232, 0.2) !important;
+
+        /* Pulse Ring for Timer */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.03); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
         }
-        .time-grid-line {
-            border-bottom: 1px dashed rgba(220, 224, 230, 0.6);
-        }
-        .dark .time-grid-line {
-            border-bottom: 1px dashed rgba(60, 64, 67, 0.6);
-        }
-        /* SVG Circle timer animation */
-        .progress-ring__circle {
-            transition: stroke-dashoffset 0.35s;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
+        .timer-pulse {
+            animation: pulse-ring 2s infinite ease-in-out;
         }
     </style>
 </head>
-<body class="bg-google-bgLight dark:bg-google-darkBg text-google-textDark dark:text-google-darkText min-h-screen flex flex-col transition-colors duration-200">
+<body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans antialiased select-none">
+    <div id="root" class="h-full flex flex-col"></div>
 
-    <header class="sticky top-0 z-30 bg-white dark:bg-google-darkSurface border-b border-google-borderLight dark:border-google-darkBorder shadow-sm px-4 py-2.5">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-            
-            <!-- Logo & Title -->
-            <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
-                <div class="flex items-center space-x-2.5 cursor-pointer" onclick="switchView('daily')">
-                    <div class="w-10 h-10 rounded-xl bg-google-blue flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-                        <i class="fa-solid fa-calendar-check text-xl"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-google-blue to-purple-600 bg-clip-text text-transparent">FlexSchedule</h1>
-                        <p class="text-xs text-google-textMuted dark:text-google-darkMuted font-medium -mt-1">Dynamic Daily Planner</p>
-                    </div>
-                </div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo } = React;
 
-                <!-- View Switcher (Pill Segmented Control) -->
-                <div class="bg-gray-100 dark:bg-neutral-800 p-1 rounded-xl flex items-center space-x-1 text-xs font-semibold">
-                    <button id="viewBtn-daily" onclick="switchView('daily')" class="px-3 py-1.5 rounded-lg transition-all text-google-blue bg-white dark:bg-neutral-700 dark:text-white shadow-sm">Daily</button>
-                    <button id="viewBtn-weekly" onclick="switchView('weekly')" class="px-3 py-1.5 rounded-lg transition-all text-google-textMuted dark:text-google-darkMuted hover:text-google-textDark dark:hover:text-white">Weekly</button>
-                    <button id="viewBtn-month" onclick="switchView('month')" class="px-3 py-1.5 rounded-lg transition-all text-google-textMuted dark:text-google-darkMuted hover:text-google-textDark dark:hover:text-white">Month</button>
-                    <button id="viewBtn-food" onclick="switchView('food')" class="px-3 py-1.5 rounded-lg transition-all text-google-textMuted dark:text-google-darkMuted hover:text-google-textDark dark:hover:text-white flex items-center space-x-1">
-                        <i class="fa-solid fa-utensils text-xs"></i>
-                        <span>Food</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Day Strip (Mon-Sun) -->
-            <div id="dayStripContainer" class="flex items-center space-x-1 bg-gray-50 dark:bg-neutral-800/60 p-1 rounded-xl overflow-x-auto max-w-full">
-                <!-- Javascript will inject mon-sun day pills here -->
-            </div>
-
-            <!-- Utility Cluster -->
-            <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
-                <!-- Pomodoro Timer Trigger -->
-                <button onclick="openPomodoroModal()" title="Pomodoro Focus Studio" class="flex items-center space-x-1.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 px-3 py-1.5 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/50 text-xs font-semibold transition">
-                    <i class="fa-solid fa-stopwatch animate-pulse"></i>
-                    <span class="hidden sm:inline">Focus Timer</span>
-                </button>
-
-                <!-- Grid Interval & Hours Settings -->
-                <button onclick="openSettingsModal()" title="Time Grid Settings" class="p-2 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-google-textMuted dark:text-google-darkMuted transition">
-                    <i class="fa-solid fa-sliders text-sm"></i>
-                </button>
-
-                <!-- Dark / Light Mode Toggle -->
-                <button id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Theme" class="p-2 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-google-textMuted dark:text-google-darkMuted transition">
-                    <i class="fa-solid fa-moon text-sm dark:hidden"></i>
-                    <i class="fa-solid fa-sun text-sm hidden dark:block text-amber-400"></i>
-                </button>
-
-                <!-- Export / Import JSON -->
-                <div class="relative inline-block text-left">
-                    <button onclick="exportData()" title="Export Backup JSON" class="p-2 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-google-textMuted dark:text-google-darkMuted transition">
-                        <i class="fa-solid fa-download text-sm"></i>
-                    </button>
-                </div>
-                <label title="Import Backup JSON" class="p-2 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-google-textMuted dark:text-google-darkMuted cursor-pointer transition">
-                    <i class="fa-solid fa-upload text-sm"></i>
-                    <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="importData(event)">
-                </label>
-
-                <!-- Reset Data Button -->
-                <button onclick="confirmClearAll()" title="Reset All Data" class="p-2 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-red-100 dark:hover:bg-red-900/40 text-google-textMuted hover:text-red-600 transition">
-                    <i class="fa-solid fa-trash-arrow-up text-sm"></i>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Daily Motivation Banner -->
-    <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 border-b border-google-borderLight dark:border-google-darkBorder px-4 py-2">
-        <div class="max-w-7xl mx-auto flex items-center justify-between text-xs">
-            <div class="flex items-center space-x-2 text-google-textMuted dark:text-google-darkMuted overflow-hidden">
-                <i class="fa-solid fa-quote-left text-google-blue"></i>
-                <span id="quoteText" class="italic truncate font-medium">"Efficiency is doing things right; effectiveness is doing the right things."</span>
-                <span id="quoteAuthor" class="font-semibold text-google-blue"></span>
-            </div>
-            <button onclick="refreshQuote()" class="text-google-textMuted hover:text-google-blue dark:hover:text-white ml-2 shrink-0 flex items-center space-x-1">
-                <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
-                <span class="hidden sm:inline">New Quote</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Main Application Container -->
-    <div class="max-w-7xl mx-auto w-full flex-1 flex flex-col md:flex-row p-3 md:p-5 gap-5 overflow-hidden">
-
-        <!-- LEFT SIDEBAR PANEL -->
-        <aside id="leftSidebar" class="w-full md:w-80 shrink-0 flex flex-col gap-4">
-            <!-- Sidebar Header & Toggle for View Types -->
-            <div id="sidebarContent" class="bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-2xl p-4 shadow-sm flex flex-col h-full">
-                <!-- Content injected dynamically based on view (Saved Activity Library vs Food Goals) -->
-            </div>
-        </aside>
-
-        <!-- MAIN SCHEDULE CANVAS AREA -->
-        <main class="flex-1 flex flex-col min-w-0 bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-2xl shadow-sm overflow-hidden">
-            
-            <!-- Progress Bar Header (Visible in Daily View) -->
-            <div id="dailyProgressHeader" class="p-4 border-b border-google-borderLight dark:border-google-darkBorder bg-gray-50/50 dark:bg-neutral-800/30 flex flex-col space-y-2">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-2">
-                        <span id="currentDateDisplay" class="font-bold text-lg">Today</span>
-                        <span id="progressCountBadge" class="text-xs bg-blue-100 dark:bg-blue-900/50 text-google-blue dark:text-blue-300 px-2.5 py-0.5 rounded-full font-semibold">0/0 completed</span>
-                    </div>
-                    <span id="progressPercentBadge" class="text-sm font-bold text-google-blue">0%</span>
-                </div>
-                <div class="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2 overflow-hidden">
-                    <div id="dailyProgressBar" class="bg-google-blue h-full rounded-full transition-all duration-500" style="width: 0%"></div>
-                </div>
-            </div>
-
-            <!-- VIEW CANVASES -->
-            <div class="flex-1 overflow-y-auto p-4 relative" id="canvasScrollArea">
-                
-                <!-- DAILY SCHEDULE VIEW -->
-                <div id="view-daily" class="flex flex-col h-full">
-                    <!-- Dynamic Time Slots Container -->
-                    <div id="dailyTimeGrid" class="flex flex-col divide-y divide-gray-100 dark:divide-neutral-800 relative">
-                        <!-- Dynamic time rows injected via JS -->
-                    </div>
-                </div>
-
-                <!-- WEEKLY SCHEDULE VIEW -->
-                <div id="view-weekly" class="hidden flex-col h-full overflow-x-auto">
-                    <div class="min-w-[700px] flex flex-col">
-                        <!-- Days Header -->
-                        <div id="weeklyHeaderRow" class="grid grid-cols-8 border-b border-google-borderLight dark:border-google-darkBorder pb-2 text-center text-xs font-bold text-google-textMuted dark:text-google-darkMuted sticky top-0 bg-white dark:bg-google-darkSurface z-10">
-                            <div>Time</div>
-                            <div>Mon</div>
-                            <div>Tue</div>
-                            <div>Wed</div>
-                            <div>Thu</div>
-                            <div>Fri</div>
-                            <div>Sat</div>
-                            <div>Sun</div>
-                        </div>
-                        <!-- Weekly Grid Rows -->
-                        <div id="weeklyTimeGrid" class="flex flex-col divide-y divide-gray-100 dark:divide-neutral-800">
-                            <!-- Injected via JS -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MONTH VIEW -->
-                <div id="view-month" class="hidden flex-col h-full">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 id="monthTitle" class="text-lg font-bold">Month View</h2>
-                        <div class="flex space-x-1">
-                            <button onclick="changeMonth(-1)" class="p-1.5 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200"><i class="fa-solid fa-chevron-left text-xs"></i></button>
-                            <button onclick="changeMonth(1)" class="p-1.5 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200"><i class="fa-solid fa-chevron-right text-xs"></i></button>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-google-textMuted dark:text-google-darkMuted mb-2">
-                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-                    </div>
-                    <div id="monthGrid" class="grid grid-cols-7 gap-1 flex-1">
-                        <!-- Dynamic month cells injected via JS -->
-                    </div>
-                </div>
-
-                <!-- FOOD TRACKER VIEW -->
-                <div id="view-food" class="hidden flex-col space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        
-                        <!-- Calorie Summary Ring Card -->
-                        <div class="bg-gray-50 dark:bg-neutral-800/50 p-5 rounded-2xl border border-google-borderLight dark:border-google-darkBorder flex flex-col items-center justify-center relative">
-                            <h3 class="text-sm font-bold text-google-textMuted dark:text-google-darkMuted mb-2 uppercase tracking-wider">Calories Remaining</h3>
-                            
-                            <!-- Circular SVG Progress Ring -->
-                            <div class="relative w-40 h-40 flex items-center justify-center my-2">
-                                <svg class="w-full h-full" viewBox="0 0 100 100">
-                                    <circle class="text-gray-200 dark:text-neutral-700" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
-                                    <circle id="calorieRing" class="text-google-blue progress-ring__circle" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
-                                </svg>
-                                <div class="absolute flex flex-col items-center text-center">
-                                    <span id="foodCalRemaining" class="text-2xl font-extrabold">2000</span>
-                                    <span class="text-[10px] text-google-textMuted dark:text-google-darkMuted font-medium">kcal left</span>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between w-full text-xs font-semibold pt-2 border-t border-gray-200 dark:border-neutral-700">
-                                <div class="text-center">
-                                    <div class="text-google-textMuted dark:text-google-darkMuted text-[10px]">Consumed</div>
-                                    <div id="foodCalEaten" class="text-google-blue font-bold">0 kcal</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-google-textMuted dark:text-google-darkMuted text-[10px]">Target</div>
-                                    <div id="foodCalTarget" class="font-bold">2000 kcal</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Macro Breakdown Card -->
-                        <div class="bg-gray-50 dark:bg-neutral-800/50 p-5 rounded-2xl border border-google-borderLight dark:border-google-darkBorder flex flex-col justify-between space-y-3">
-                            <h3 class="text-sm font-bold text-google-textMuted dark:text-google-darkMuted uppercase tracking-wider">Macros Today</h3>
-                            
-                            <!-- Protein Bar -->
-                            <div>
-                                <div class="flex justify-between text-xs font-bold mb-1">
-                                    <span class="text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-drumstick-bite mr-1"></i> Protein</span>
-                                    <span id="proteinStat">0 / 150g</span>
-                                </div>
-                                <div class="w-full bg-gray-200 dark:bg-neutral-700 h-2.5 rounded-full overflow-hidden">
-                                    <div id="proteinBar" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <!-- Carbs Bar -->
-                            <div>
-                                <div class="flex justify-between text-xs font-bold mb-1">
-                                    <span class="text-amber-600 dark:text-amber-400"><i class="fa-solid fa-wheat-awn mr-1"></i> Carbs</span>
-                                    <span id="carbsStat">0 / 220g</span>
-                                </div>
-                                <div class="w-full bg-gray-200 dark:bg-neutral-700 h-2.5 rounded-full overflow-hidden">
-                                    <div id="carbsBar" class="bg-amber-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-                                </div>
-                            </div>
-
-                            <!-- Fat Bar -->
-                            <div>
-                                <div class="flex justify-between text-xs font-bold mb-1">
-                                    <span class="text-rose-600 dark:text-rose-400"><i class="fa-solid fa-cheese mr-1"></i> Fat</span>
-                                    <span id="fatStat">0 / 65g</span>
-                                </div>
-                                <div class="w-full bg-gray-200 dark:bg-neutral-700 h-2.5 rounded-full overflow-hidden">
-                                    <div id="fatBar" class="bg-rose-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Log Meal Form Card -->
-                        <div class="bg-gray-50 dark:bg-neutral-800/50 p-5 rounded-2xl border border-google-borderLight dark:border-google-darkBorder flex flex-col justify-between">
-                            <h3 class="text-sm font-bold text-google-textMuted dark:text-google-darkMuted uppercase tracking-wider mb-2">Log a Meal</h3>
-                            <form onsubmit="handleLogMeal(event)" class="space-y-2.5">
-                                <input type="text" id="mealNameInput" placeholder="Meal Name (e.g., Grilled Chicken Salad)" required class="w-full px-3 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
-                                <div class="grid grid-cols-2 gap-2">
-                                    <input type="number" id="mealCalInput" placeholder="Calories (kcal)" required min="0" class="px-3 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
-                                    <input type="number" id="mealProteinInput" placeholder="Protein (g)" min="0" class="px-3 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
-                                </div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <input type="number" id="mealCarbsInput" placeholder="Carbs (g)" min="0" class="px-3 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
-                                    <input type="number" id="mealFatInput" placeholder="Fat (g)" min="0" class="px-3 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
-                                </div>
-                                <button type="submit" class="w-full bg-google-blue hover:bg-google-hoverBlue text-white font-bold py-2 rounded-xl text-xs shadow transition flex items-center justify-center space-x-1">
-                                    <i class="fa-solid fa-plus text-xs"></i>
-                                    <span>Add Meal</span>
-                                </button>
-                            </form>
-                        </div>
-
-                    </div>
-
-                    <!-- Today's Logged Meals List -->
-                    <div class="bg-gray-50 dark:bg-neutral-800/30 rounded-2xl border border-google-borderLight dark:border-google-darkBorder p-5">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-base font-bold flex items-center space-x-2">
-                                <i class="fa-solid fa-utensils text-google-blue"></i>
-                                <span>Today's Logged Meals</span>
-                            </h3>
-                            <span id="mealCountBadge" class="text-xs bg-gray-200 dark:bg-neutral-700 px-2.5 py-1 rounded-full font-semibold">0 logged</span>
-                        </div>
-                        <div id="loggedMealsList" class="space-y-2">
-                            <!-- Injected via JS -->
-                        </div>
-                    </div>
-
-                    <!-- Weight Logger & Weekly Goals Summary -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div class="bg-gray-50 dark:bg-neutral-800/30 rounded-2xl border border-google-borderLight dark:border-google-darkBorder p-4 flex items-center justify-between">
-                            <div>
-                                <h4 class="font-bold text-xs uppercase text-google-textMuted dark:text-google-darkMuted">Today's Weight</h4>
-                                <p class="text-xs text-gray-500">Track your daily morning weight check-in</p>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <input type="number" id="weightInput" step="0.1" placeholder="70.5" class="w-20 px-2.5 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-center font-bold">
-                                <span class="text-xs font-semibold">kg</span>
-                                <button onclick="saveWeightLog()" class="bg-google-blue text-white px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-google-hoverBlue">Save</button>
-                            </div>
-                        </div>
-                        <div class="bg-gray-50 dark:bg-neutral-800/30 rounded-2xl border border-google-borderLight dark:border-google-darkBorder p-4 flex items-center justify-between">
-                            <div>
-                                <h4 class="font-bold text-xs uppercase text-google-textMuted dark:text-google-darkMuted">Weekly Nutrition Target</h4>
-                                <p id="weeklyCalorieSummary" class="text-xs text-gray-500">0 / 14,000 total weekly kcal consumed</p>
-                            </div>
-                            <i class="fa-solid fa-chart-line text-2xl text-google-blue opacity-80"></i>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </main>
-    </div>
-
-    <!-- MODAL 1: CREATE / EDIT SAVED ACTIVITY -->
-    <div id="activityModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
-            <div class="flex justify-between items-center border-b border-gray-100 dark:border-neutral-800 pb-3">
-                <h3 id="activityModalTitle" class="text-base font-bold">New Saved Activity</h3>
-                <button onclick="closeModal('activityModal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <form onsubmit="handleSaveActivity(event)" class="space-y-3">
-                <input type="hidden" id="editActivityId">
-                <div>
-                    <label class="block text-xs font-semibold mb-1">Activity Name</label>
-                    <input type="text" id="actNameInput" required placeholder="e.g. Calculus Practice" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold mb-1">Category</label>
-                        <select id="actCategoryInput" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
-                            <option value="Academics">Academics</option>
-                            <option value="Sports">Sports</option>
-                            <option value="Hobbies">Hobbies</option>
-                            <option value="Chores">Chores</option>
-                            <option value="Work">Work</option>
-                            <option value="School">School</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold mb-1">Duration (Mins)</label>
-                        <input type="number" id="actDurationInput" required min="15" step="15" value="45" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold mb-1">Icon (FontAwesome class or emoji)</label>
-                    <input type="text" id="actIconInput" placeholder="fa-book or 📚" value="fa-book" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
-                </div>
-                <div class="flex justify-end space-x-2 pt-3 border-t border-gray-100 dark:border-neutral-800">
-                    <button type="button" onclick="closeModal('activityModal')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200">Cancel</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-bold bg-google-blue hover:bg-google-hoverBlue text-white">Save Activity</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL 2: TIME GRID SETTINGS -->
-    <div id="settingsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
-            <div class="flex justify-between items-center border-b border-gray-100 dark:border-neutral-800 pb-3">
-                <h3 class="text-base font-bold flex items-center space-x-2">
-                    <i class="fa-solid fa-sliders text-google-blue"></i>
-                    <span>Schedule Grid Settings</span>
-                </h3>
-                <button onclick="closeModal('settingsModal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <form onsubmit="handleSaveSettings(event)" class="space-y-4">
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold mb-1">Start Hour</label>
-                        <select id="settingStartHour" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
-                            <option value="5">5:00 AM</option>
-                            <option value="6">6:00 AM</option>
-                            <option value="7" selected>7:00 AM</option>
-                            <option value="8">8:00 AM</option>
-                            <option value="9">9:00 AM</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold mb-1">End Hour</label>
-                        <select id="settingEndHour" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
-                            <option value="18">6:00 PM</option>
-                            <option value="19">7:00 PM</option>
-                            <option value="20" selected>8:00 PM</option>
-                            <option value="21">9:00 PM</option>
-                            <option value="22">10:00 PM</option>
-                            <option value="23">11:00 PM</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold mb-1">Slot Duration Interval</label>
-                    <select id="settingSlotInterval" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
-                        <option value="15">15 Minutes</option>
-                        <option value="30" selected>30 Minutes</option>
-                        <option value="45">45 Minutes</option>
-                        <option value="60">60 Minutes</option>
-                    </select>
-                    <p class="text-[11px] text-google-textMuted dark:text-google-darkMuted mt-1">E.g., 45 min interval generates slots like 7:00, 7:45, 8:30, 9:15...</p>
-                </div>
-                <div class="flex justify-end space-x-2 pt-3 border-t border-gray-100 dark:border-neutral-800">
-                    <button type="button" onclick="closeModal('settingsModal')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200">Cancel</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-bold bg-google-blue hover:bg-google-hoverBlue text-white">Apply Settings</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL 3: POMODORO FOCUS STUDIO -->
-    <div id="pomodoroModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-3xl shadow-2xl w-full max-w-sm p-6 flex flex-col items-center text-center space-y-5">
-            <div class="flex justify-between items-center w-full">
-                <span class="text-xs uppercase font-bold tracking-widest text-red-500 flex items-center space-x-1">
-                    <i class="fa-solid fa-fire"></i>
-                    <span>Focus Studio</span>
-                </span>
-                <button onclick="closeModal('pomodoroModal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-
-            <!-- Big Digital Countdown Timer -->
-            <div class="relative w-48 h-48 flex items-center justify-center">
-                <svg class="w-full h-full" viewBox="0 0 100 100">
-                    <circle class="text-gray-200 dark:text-neutral-800" stroke-width="6" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50"/>
-                    <circle id="pomoRing" class="text-red-500 progress-ring__circle" stroke-width="6" stroke-dasharray="263.89" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50"/>
-                </svg>
-                <div class="absolute flex flex-col items-center">
-                    <span id="pomoDisplay" class="text-4xl font-black tracking-tight">25:00</span>
-                    <span id="pomoStatusText" class="text-xs font-semibold text-google-textMuted dark:text-google-darkMuted mt-1">Ready to Focus</span>
-                </div>
-            </div>
-
-            <!-- Custom Timer Inputs -->
-            <div class="grid grid-cols-2 gap-3 w-full text-left">
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-google-textMuted dark:text-google-darkMuted mb-1">Work (min)</label>
-                    <input type="number" id="pomoWorkInput" value="25" min="1" max="120" class="w-full px-3 py-1.5 text-xs text-center rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 font-bold">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold uppercase text-google-textMuted dark:text-google-darkMuted mb-1">Break (min)</label>
-                    <input type="number" id="pomoBreakInput" value="5" min="1" max="60" class="w-full px-3 py-1.5 text-xs text-center rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 font-bold">
-                </div>
-            </div>
-
-            <!-- Control Buttons -->
-            <div class="flex items-center space-x-3 w-full">
-                <button id="pomoStartBtn" onclick="togglePomodoro()" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-red-500/20">
-                    Start Session
-                </button>
-                <button onclick="resetPomodoro()" class="p-2.5 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 text-google-textMuted dark:text-google-darkMuted">
-                    <i class="fa-solid fa-rotate-left text-sm"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 4: CONFIRM CLEAR DATA -->
-    <div id="clearConfirmModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-2xl shadow-xl w-full max-w-sm p-5 space-y-4 text-center">
-            <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto text-xl">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-            <div>
-                <h3 class="text-base font-bold">Clear All Data?</h3>
-                <p class="text-xs text-google-textMuted dark:text-google-darkMuted mt-1">This will erase all scheduled blocks, saved activities, meals, and settings from local storage. This action cannot be undone.</p>
-            </div>
-            <div class="flex space-x-2 pt-2">
-                <button onclick="closeModal('clearConfirmModal')" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200">Cancel</button>
-                <button onclick="executeClearAll()" class="flex-1 py-2 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white">Reset Everything</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification Container -->
-    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
-
-    <script>
-        /* APP STATE MANAGEMENT */
-        const STORAGE_KEY = 'FLEXSCHEDULE_PROD_DATA_V1';
-
-        const DEFAULT_QUOTES = [
-            { quote: "Efficiency is doing things right; effectiveness is doing the right things.", author: "Peter Drucker" },
-            { quote: "Action is the foundational key to all success.", author: "Pablo Picasso" },
-            { quote: "You don't have to see the whole staircase, just take the first step.", author: "Martin Luther King Jr." },
-            { quote: "Focus on being productive instead of busy.", author: "Tim Ferriss" },
-            { quote: "Small daily improvements over time lead to stunning results.", author: "Robin Sharma" }
+        // Accent Presets List
+        const ACCENT_PRESETS = [
+            { name: 'Google Blue', hex: '#1A73E8' },
+            { name: 'Indigo', hex: '#4F46E5' },
+            { name: 'Emerald', hex: '#10B981' },
+            { name: 'Amber', hex: '#F59E0B' },
+            { name: 'Rose', hex: '#E11D48' },
+            { name: 'Violet', hex: '#8B5CF6' },
+            { name: 'Teal', hex: '#0D9488' },
+            { name: 'Dark Teal', hex: '#008080' }
         ];
 
-        const CATEGORY_COLORS = {
-            Academics: { bg: 'bg-blue-50 dark:bg-blue-950/40', text: 'text-google-blue', border: 'border-google-blue', hex: '#1A73E8' },
-            Sports: { bg: 'bg-emerald-50 dark:bg-emerald-950/40', text: 'text-emerald-600', border: 'border-emerald-500', hex: '#1E8E3E' },
-            Hobbies: { bg: 'bg-purple-50 dark:bg-purple-950/40', text: 'text-purple-600', border: 'border-purple-500', hex: '#A142F4' },
-            Chores: { bg: 'bg-amber-50 dark:bg-amber-950/40', text: 'text-amber-600', border: 'border-amber-500', hex: '#F9AB00' },
-            Work: { bg: 'bg-indigo-50 dark:bg-indigo-950/40', text: 'text-indigo-600', border: 'border-indigo-500', hex: '#6200EE' },
-            School: { bg: 'bg-pink-50 dark:bg-pink-950/40', text: 'text-pink-600', border: 'border-pink-500', hex: '#E52592' }
-        };
-
-        // App Central State initialized with strictly ZERO scheduled events and ZERO meals by default
-        let state = {
-            currentView: 'daily',
-            selectedDayIndex: new Date().getDay() === 0 ? 6 : new Date().getDay() - 1, // 0: Mon, 6: Sun
-            currentMonthOffset: 0,
-            settings: {
-                startHour: 7,
-                endHour: 20,
-                slotInterval: 30, // in minutes
-                darkMode: false
-            },
-            savedActivities: [], // Library of reusable activities
-            scheduledEvents: [], // Strictly EMPTY by default!
-            loggedMeals: [],     // Strictly EMPTY by default!
-            nutritionGoals: {
-                calories: 2000,
-                protein: 150,
-                carbs: 220,
-                fat: 65
-            },
-            weightLogs: [],
-            activeCategoryFilter: 'All',
-            activitySearchQuery: ''
-        };
-
-        function loadState() {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    state = { ...state, ...parsed };
-                }
-            } catch (e) {
-                console.error("Failed to parse local storage", e);
-            }
-            // Apply saved dark mode preference
-            if (state.settings.darkMode) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        }
-
-        function saveState() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-            } catch (e) {
-                console.error("Failed to save state to local storage", e);
-            }
-        }
-
-        function initApp() {
-            loadState();
-            renderDayStrip();
-            renderSidebar();
-            renderCurrentView();
-            refreshQuote();
-        }
-
-        function switchView(viewName) {
-            state.currentView = viewName;
-            
-            // Update Tab Highlight
-            ['daily', 'weekly', 'month', 'food'].forEach(v => {
-                const btn = document.getElementById(`viewBtn-${v}`);
-                if (btn) {
-                    if (v === viewName) {
-                        btn.className = "px-3 py-1.5 rounded-lg transition-all text-google-blue bg-white dark:bg-neutral-700 dark:text-white shadow-sm font-bold";
-                    } else {
-                        btn.className = "px-3 py-1.5 rounded-lg transition-all text-google-textMuted dark:text-google-darkMuted hover:text-google-textDark dark:hover:text-white";
-                    }
-                }
-                const container = document.getElementById(`view-${v}`);
-                if (container) {
-                    if (v === viewName) {
-                        container.classList.remove('hidden');
-                        container.classList.add('flex');
-                    } else {
-                        container.classList.add('hidden');
-                        container.classList.remove('flex');
-                    }
-                }
-            });
-
-            // Toggle progress header visibility (only for daily view)
-            const dailyHeader = document.getElementById('dailyProgressHeader');
-            if (dailyHeader) {
-                dailyHeader.style.display = (viewName === 'daily') ? 'flex' : 'none';
-            }
-
-            renderSidebar();
-            renderCurrentView();
-            saveState();
-        }
-
-        const DAYS_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-        function renderDayStrip() {
-            const container = document.getElementById('dayStripContainer');
-            if (!container) return;
-
-            container.innerHTML = DAYS_SHORT.map((day, idx) => {
-                const isSelected = idx === state.selectedDayIndex;
-                return `
-                    <button onclick="selectDay(${idx})" class="px-3 py-1 rounded-lg text-xs font-bold transition whitespace-nowrap ${isSelected ? 'bg-google-blue text-white shadow-sm' : 'text-google-textMuted dark:text-google-darkMuted hover:bg-gray-200 dark:hover:bg-neutral-700'}">
-                        ${day}
-                    </button>
-                `;
-            }).join('');
-        }
-
-        function selectDay(idx) {
-            state.selectedDayIndex = idx;
-            renderDayStrip();
-            renderCurrentView();
-        }
-
-        function renderSidebar() {
-            const container = document.getElementById('sidebarContent');
-            if (!container) return;
-
-            if (state.currentView === 'food') {
-                // Render Daily Nutrition Goals Setup
-                container.innerHTML = `
-                    <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-neutral-800 mb-4">
-                        <h2 class="text-sm font-bold flex items-center space-x-2">
-                            <i class="fa-solid fa-bullseye text-google-blue"></i>
-                            <span>Daily Nutrition Goals</span>
-                        </h2>
-                    </div>
-                    <form onsubmit="handleUpdateGoals(event)" class="space-y-3 text-xs">
-                        <div>
-                            <label class="block font-semibold mb-1">Calorie Target (kcal)</label>
-                            <input type="number" id="goalCalories" value="${state.nutritionGoals.calories}" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 font-bold">
-                        </div>
-                        <div>
-                            <label class="block font-semibold mb-1">Protein Goal (g)</label>
-                            <input type="number" id="goalProtein" value="${state.nutritionGoals.protein}" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
-                        </div>
-                        <div>
-                            <label class="block font-semibold mb-1">Carbs Goal (g)</label>
-                            <input type="number" id="goalCarbs" value="${state.nutritionGoals.carbs}" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
-                        </div>
-                        <div>
-                            <label class="block font-semibold mb-1">Fat Goal (g)</label>
-                            <input type="number" id="goalFat" value="${state.nutritionGoals.fat}" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
-                        </div>
-                        <button type="submit" class="w-full bg-google-blue hover:bg-google-hoverBlue text-white font-bold py-2 rounded-xl transition shadow mt-2">
-                            Update Goals
-                        </button>
-                    </form>
-                `;
-            } else {
-                // Render Saved Activity Library
-                const categories = ['All', 'Academics', 'Sports', 'Hobbies', 'Chores', 'Work', 'School'];
-                
-                // Filter activities
-                const filtered = state.savedActivities.filter(act => {
-                    const matchesCat = state.activeCategoryFilter === 'All' || act.category === state.activeCategoryFilter;
-                    const matchesSearch = act.name.toLowerCase().includes(state.activitySearchQuery.toLowerCase());
-                    return matchesCat && matchesSearch;
-                });
-
-                container.innerHTML = `
-                    <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-neutral-800 mb-3">
-                        <div class="flex items-center space-x-2">
-                            <i class="fa-solid fa-shapes text-google-blue"></i>
-                            <h2 class="text-sm font-bold">Activity Library</h2>
-                        </div>
-                        <button onclick="openActivityModal()" class="p-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-google-blue hover:bg-blue-100 text-xs font-bold flex items-center space-x-1">
-                            <i class="fa-solid fa-plus"></i>
-                            <span>New</span>
-                        </button>
-                    </div>
-
-                    <!-- Search Input -->
-                    <div class="relative mb-3">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-gray-400"></i>
-                        <input type="text" placeholder="Search activities..." value="${state.activitySearchQuery}" oninput="handleActivitySearch(this.value)" class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800 focus:outline-none focus:ring-1 focus:ring-google-blue">
-                    </div>
-
-                    <!-- Category Chips Filter -->
-                    <div class="flex items-center space-x-1 overflow-x-auto pb-2 mb-3 max-w-full">
-                        ${categories.map(cat => `
-                            <button onclick="setCategoryFilter('${cat}')" class="px-2.5 py-1 rounded-lg text-[10px] font-bold whitespace-nowrap transition ${state.activeCategoryFilter === cat ? 'bg-google-blue text-white' : 'bg-gray-100 dark:bg-neutral-800 text-google-textMuted hover:bg-gray-200'}">
-                                ${cat}
-                            </button>
-                        `).join('')}
-                    </div>
-
-                    <!-- Cards Container -->
-                    <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="libraryCardsContainer">
-                        ${filtered.length === 0 ? `
-                            <div class="p-6 text-center text-google-textMuted dark:text-google-darkMuted border-2 border-dashed border-gray-200 dark:border-neutral-800 rounded-xl my-auto">
-                                <i class="fa-solid fa-layer-group text-2xl mb-2 text-gray-300 dark:text-neutral-700"></i>
-                                <p class="text-xs font-medium">No saved activities yet.</p>
-                                <button onclick="openActivityModal()" class="mt-2 text-xs text-google-blue font-bold hover:underline">+ Add First Activity</button>
-                            </div>
-                        ` : filtered.map(act => renderActivityCardHTML(act)).join('')}
-                    </div>
-                `;
-
-                attachLibraryDragListeners();
-            }
-        }
-
-        function renderActivityCardHTML(act) {
-            const catStyle = CATEGORY_COLORS[act.category] || CATEGORY_COLORS.Academics;
-            const iconHTML = act.icon.startsWith('fa-') ? `<i class="fa-solid ${act.icon}"></i>` : act.icon;
-
-            return `
-                <div draggable="true" data-activity-id="${act.id}" class="activity-card group p-2.5 rounded-xl border ${catStyle.border} ${catStyle.bg} flex items-center justify-between cursor-grab active:cursor-grabbing hover:shadow-md transition">
-                    <div class="flex items-center space-x-2.5 min-w-0">
-                        <div class="w-7 h-7 rounded-lg bg-white/80 dark:bg-neutral-800 flex items-center justify-center text-xs ${catStyle.text} font-bold shadow-sm">
-                            ${iconHTML}
-                        </div>
-                        <div class="truncate">
-                            <h4 class="text-xs font-bold truncate">${act.name}</h4>
-                            <span class="text-[10px] text-google-textMuted dark:text-google-darkMuted font-medium">${act.duration} mins • ${act.category}</span>
-                        </div>
-                    </div>
-                    <div class="opacity-0 group-hover:opacity-100 flex items-center space-x-1 transition">
-                        <button onclick="editActivity('${act.id}')" title="Edit" class="p-1 text-gray-400 hover:text-google-blue text-xs"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteActivity('${act.id}')" title="Delete" class="p-1 text-gray-400 hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderCurrentView() {
-            if (state.currentView === 'daily') {
-                renderDailyView();
-            } else if (state.currentView === 'weekly') {
-                renderWeeklyView();
-            } else if (state.currentView === 'month') {
-                renderMonthView();
-            } else if (state.currentView === 'food') {
-                renderFoodView();
-            }
-        }
-
-        function renderDailyView() {
-            const container = document.getElementById('dailyTimeGrid');
-            if (!container) return;
-
-            // Generate slots based on startHour, endHour, and slotInterval
-            const slots = generateTimeSlots(state.settings.startHour, state.settings.endHour, state.settings.slotInterval);
-            
-            // Get events for current day index
-            const dayEvents = state.scheduledEvents.filter(e => e.dayIndex === state.selectedDayIndex);
-
-            // Calculate progress header
-            const totalCount = dayEvents.length;
-            const completedCount = dayEvents.filter(e => e.completed).length;
-            const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-
-            document.getElementById('progressCountBadge').innerText = `${completedCount}/${totalCount} completed`;
-            document.getElementById('progressPercentBadge').innerText = `${percent}%`;
-            document.getElementById('dailyProgressBar').style.width = `${percent}%`;
-            document.getElementById('currentDateDisplay').innerText = `${DAYS_SHORT[state.selectedDayIndex]} Schedule`;
-
-            if (slots.length === 0) {
-                container.innerHTML = `<div class="p-8 text-center text-gray-400">Invalid time range configured. Check Settings.</div>`;
-                return;
-            }
-
-            container.innerHTML = slots.map(slot => {
-                // Check if an event starts at this slot
-                const eventAtSlot = dayEvents.find(e => e.startTime === slot.timeStr);
-
-                return `
-                    <div class="time-slot-row flex min-h-[60px] border-b border-gray-100 dark:border-neutral-800/60 relative group" data-time="${slot.timeStr}">
-                        <!-- Time Label Column -->
-                        <div class="w-16 md:w-20 pr-3 py-2 text-right text-xs font-semibold text-google-textMuted dark:text-google-darkMuted shrink-0 select-none border-r border-gray-100 dark:border-neutral-800">
-                            ${slot.timeStr}
-                        </div>
-
-                        <!-- Drop Canvas Cell -->
-                        <div class="time-drop-zone flex-1 p-1.5 relative min-h-[58px] transition" data-time="${slot.timeStr}">
-                            ${eventAtSlot ? renderScheduledBlockHTML(eventAtSlot) : ''}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // Display Empty Grid Hint if zero items scheduled
-            if (dayEvents.length === 0) {
-                const emptyHint = document.createElement('div');
-                emptyHint.className = 'absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-6 text-center';
-                emptyHint.innerHTML = `
-                    <div class="bg-white/90 dark:bg-neutral-800/90 backdrop-blur border border-google-borderLight dark:border-google-darkBorder p-6 rounded-2xl shadow-sm max-w-sm">
-                        <i class="fa-regular fa-calendar-plus text-3xl text-google-blue mb-2"></i>
-                        <h4 class="font-bold text-sm">Your Schedule is Empty</h4>
-                        <p class="text-xs text-google-textMuted dark:text-google-darkMuted mt-1">Drag an activity from the Saved Library on the left into any time slot to start planning your day!</p>
-                    </div>
-                `;
-                container.appendChild(emptyHint);
-            }
-
-            attachSlotDropListeners();
-        }
-
-        function renderScheduledBlockHTML(evt) {
-            const catStyle = CATEGORY_COLORS[evt.category] || CATEGORY_COLORS.Academics;
-            const iconHTML = evt.icon && evt.icon.startsWith('fa-') ? `<i class="fa-solid ${evt.icon}"></i>` : (evt.icon || '<i class="fa-solid fa-clock"></i>');
-
-            return `
-                <div class="scheduled-block w-full h-full p-2.5 rounded-xl border ${catStyle.border} ${catStyle.bg} flex items-center justify-between shadow-sm transition ${evt.completed ? 'opacity-50 line-through' : ''}">
-                    <div class="flex items-center space-x-2.5 min-w-0">
-                        <button onclick="toggleEventComplete('${evt.id}')" class="text-sm cursor-pointer ${evt.completed ? 'text-emerald-500' : 'text-gray-300 hover:text-emerald-500'}">
-                            <i class="fa-${evt.completed ? 'solid fa-circle-check' : 'regular fa-circle'}"></i>
-                        </button>
-                        <div class="w-6 h-6 rounded-md bg-white/80 dark:bg-neutral-800 flex items-center justify-center text-xs ${catStyle.text} font-bold shrink-0">
-                            ${iconHTML}
-                        </div>
-                        <div class="truncate">
-                            <h4 class="text-xs font-bold truncate">${evt.name}</h4>
-                            <span class="text-[10px] text-google-textMuted dark:text-google-darkMuted font-medium">${evt.startTime} (${evt.duration} mins)</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-1 shrink-0">
-                        <button onclick="removeScheduledEvent('${evt.id}')" title="Remove block" class="p-1 text-gray-400 hover:text-red-500 text-xs">
-                            <i class="fa-solid fa-xmark text-sm"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function generateTimeSlots(startH, endH, intervalMins) {
-            const slots = [];
-            let current = startH * 60; // in minutes from midnight
-            const end = endH * 60;
-
-            while (current <= end) {
-                const hh = Math.floor(current / 60);
-                const mm = current % 60;
-                const hhStr = hh.toString().padStart(2, '0');
-                const mmStr = mm.toString().padStart(2, '0');
-                slots.push({
-                    totalMins: current,
-                    timeStr: `${hhStr}:${mmStr}`
-                });
-                current += intervalMins;
-            }
-            return slots;
-        }
-
-        function renderWeeklyView() {
-            const container = document.getElementById('weeklyTimeGrid');
-            if (!container) return;
-
-            const slots = generateTimeSlots(state.settings.startHour, state.settings.endHour, state.settings.slotInterval);
-
-            container.innerHTML = slots.map(slot => `
-                <div class="grid grid-cols-8 text-xs min-h-[50px]">
-                    <!-- Time Column -->
-                    <div class="py-2 px-1 text-center font-bold text-google-textMuted dark:text-google-darkMuted border-r border-gray-100 dark:border-neutral-800">
-                        ${slot.timeStr}
-                    </div>
-                    <!-- Day Columns (0: Mon -> 6: Sun) -->
-                    ${[0,1,2,3,4,5,6].map(dayIdx => {
-                        const event = state.scheduledEvents.find(e => e.dayIndex === dayIdx && e.startTime === slot.timeStr);
-                        const catStyle = event ? (CATEGORY_COLORS[event.category] || CATEGORY_COLORS.Academics) : null;
-
-                        return `
-                            <div class="p-1 border-r border-gray-100 dark:border-neutral-800 relative time-drop-zone min-h-[48px]" data-day="${dayIdx}" data-time="${slot.timeStr}">
-                                ${event ? `
-                                    <div class="p-1.5 rounded-lg text-[10px] border ${catStyle.border} ${catStyle.bg} font-bold truncate flex items-center justify-between">
-                                        <span class="truncate">${event.name}</span>
-                                        <button onclick="removeScheduledEvent('${event.id}')" class="text-gray-400 hover:text-red-500 text-[10px] ml-1"><i class="fa-solid fa-xmark"></i></button>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            `).join('');
-
-            attachSlotDropListeners();
-        }
-
-        function renderMonthView() {
-            const container = document.getElementById('monthGrid');
-            const title = document.getElementById('monthTitle');
-            if (!container || !title) return;
-
-            const today = new Date();
-            const currentMonth = new Date(today.getFullYear(), today.getMonth() + state.currentMonthOffset, 1);
-            
-            title.innerText = currentMonth.toLocaleDateString('default', { month: 'long', year: 'numeric' });
-
-            const firstDayIndex = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
-            const totalDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
-
-            let cellsHTML = '';
-
-            // Blank padding cells
-            for (let i = 0; i < firstDayIndex; i++) {
-                cellsHTML += `<div class="bg-gray-50/50 dark:bg-neutral-800/20 rounded-xl p-2 min-h-[80px]"></div>`;
-            }
-
-            // Actual days
-            for (let day = 1; day <= totalDays; day++) {
-                const isToday = (day === today.getDate() && state.currentMonthOffset === 0);
-                cellsHTML += `
-                    <div class="border border-gray-100 dark:border-neutral-800 rounded-xl p-2 min-h-[80px] flex flex-col justify-between ${isToday ? 'bg-blue-50/50 dark:bg-blue-950/20 border-google-blue font-bold' : 'bg-white dark:bg-neutral-800/40'}">
-                        <span class="text-xs ${isToday ? 'text-google-blue' : 'text-google-textMuted'}">${day}</span>
-                        <div class="text-[9px] text-gray-400 italic">No events</div>
-                    </div>
-                `;
-            }
-
-            container.innerHTML = cellsHTML;
-        }
-
-        function changeMonth(delta) {
-            state.currentMonthOffset += delta;
-            renderMonthView();
-        }
-
-        function renderFoodView() {
-            const mealsList = document.getElementById('loggedMealsList');
-            if (!mealsList) return;
-
-            // Calculate current totals from logged meals
-            let totalCal = 0, totalP = 0, totalC = 0, totalF = 0;
-            state.loggedMeals.forEach(m => {
-                totalCal += (m.calories || 0);
-                totalP += (m.protein || 0);
-                totalC += (m.carbs || 0);
-                totalF += (m.fat || 0);
-            });
-
-            const targetCal = state.nutritionGoals.calories;
-            const remainingCal = Math.max(0, targetCal - totalCal);
-
-            document.getElementById('foodCalRemaining').innerText = remainingCal;
-            document.getElementById('foodCalEaten').innerText = `${totalCal} kcal`;
-            document.getElementById('foodCalTarget').innerText = `${targetCal} kcal`;
-
-            // SVG Circle Progress calculation (r = 40, circumference = 2 * pi * 40 ≈ 251.2)
-            const ring = document.getElementById('calorieRing');
-            if (ring) {
-                const fraction = Math.min(1, totalCal / targetCal);
-                const offset = 251.2 * (1 - fraction);
-                ring.style.strokeDashoffset = offset;
-            }
-
-            // Macro Stats
-            document.getElementById('proteinStat').innerText = `${totalP} / ${state.nutritionGoals.protein}g`;
-            document.getElementById('proteinBar').style.width = `${Math.min(100, (totalP / state.nutritionGoals.protein) * 100)}%`;
-
-            document.getElementById('carbsStat').innerText = `${totalC} / ${state.nutritionGoals.carbs}g`;
-            document.getElementById('carbsBar').style.width = `${Math.min(100, (totalC / state.nutritionGoals.carbs) * 100)}%`;
-
-            document.getElementById('fatStat').innerText = `${totalF} / ${state.nutritionGoals.fat}g`;
-            document.getElementById('fatBar').style.width = `${Math.min(100, (totalF / state.nutritionGoals.fat) * 100)}%`;
-
-            document.getElementById('mealCountBadge').innerText = `${state.loggedMeals.length} logged`;
-
-            // Render Logged Meals (Strictly EMPTY state if zero meals logged)
-            if (state.loggedMeals.length === 0) {
-                mealsList.innerHTML = `
-                    <div class="p-8 text-center border-2 border-dashed border-gray-200 dark:border-neutral-800 rounded-2xl">
-                        <i class="fa-solid fa-plate-wheat text-3xl text-gray-300 dark:text-neutral-700 mb-2"></i>
-                        <p class="text-xs font-semibold text-google-textMuted dark:text-google-darkMuted">No meals logged today yet.</p>
-                        <p class="text-[11px] text-gray-400 mt-1">Use the "Log a Meal" card above to record your breakfast, lunch, dinner or snacks!</p>
-                    </div>
-                `;
-            } else {
-                mealsList.innerHTML = state.loggedMeals.map(meal => `
-                    <div class="p-3 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-xl flex items-center justify-between shadow-sm">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center text-xs font-bold">
-                                <i class="fa-solid fa-utensils"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-bold">${meal.name}</h4>
-                                <span class="text-[10px] text-google-textMuted dark:text-google-darkMuted font-medium">P: ${meal.protein || 0}g • C: ${meal.carbs || 0}g • F: ${meal.fat || 0}g</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="text-xs font-extrabold text-google-blue">${meal.calories} kcal</span>
-                            <button onclick="deleteMeal('${meal.id}')" title="Delete meal" class="p-1 text-gray-400 hover:text-red-500 text-xs">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            // Summary card
-            document.getElementById('weeklyCalorieSummary').innerText = `${totalCal} / ${targetCal * 7} total estimated weekly kcal`;
-        }
-
-        let draggedActivityId = null;
-
-        function attachLibraryDragListeners() {
-            const cards = document.querySelectorAll('.activity-card');
-            cards.forEach(card => {
-                card.addEventListener('dragstart', (e) => {
-                    draggedActivityId = card.getAttribute('data-activity-id');
-                    card.classList.add('dragging');
-                    e.dataTransfer.setData('text/plain', draggedActivityId);
-                });
-                card.addEventListener('dragend', () => {
-                    card.classList.remove('dragging');
-                });
-            });
-        }
-
-        function attachSlotDropListeners() {
-            const dropZones = document.querySelectorAll('.time-drop-zone');
-            dropZones.forEach(zone => {
-                zone.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    zone.classList.add('drag-over');
-                });
-                zone.addEventListener('dragleave', () => {
-                    zone.classList.remove('drag-over');
-                });
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.classList.remove('drag-over');
-
-                    const actId = e.dataTransfer.getData('text/plain') || draggedActivityId;
-                    const startTime = zone.getAttribute('data-time');
-                    const dayIdxAttr = zone.getAttribute('data-day');
-                    const dayIndex = dayIdxAttr !== null ? parseInt(dayIdxAttr, 10) : state.selectedDayIndex;
-
-                    if (actId && startTime) {
-                        scheduleActivityOnGrid(actId, startTime, dayIndex);
-                    }
-                });
-            });
-        }
-
-        function scheduleActivityOnGrid(actId, startTime, dayIndex) {
-            const act = state.savedActivities.find(a => a.id === actId);
-            if (!act) return;
-
-            // Remove any existing event in this exact slot for this day
-            state.scheduledEvents = state.scheduledEvents.filter(e => !(e.dayIndex === dayIndex && e.startTime === startTime));
-
-            const newEvent = {
-                id: 'evt_' + Date.now() + Math.random().toString(36).substr(2, 4),
-                activityId: act.id,
-                name: act.name,
-                category: act.category,
-                duration: act.duration,
-                icon: act.icon,
-                dayIndex: dayIndex,
-                startTime: startTime,
-                completed: false
+        // Default Categories (Clean customizable starting set)
+        const DEFAULT_CATEGORIES = [
+            { id: 'cat-work', name: 'Work', color: '#1A73E8', icon: 'fa-briefcase' },
+            { id: 'cat-study', name: 'Study', color: '#8B5CF6', icon: 'fa-book-open' },
+            { id: 'cat-health', name: 'Health & Fitness', color: '#10B981', icon: 'fa-heart-pulse' },
+            { id: 'cat-personal', name: 'Personal', color: '#F59E0B', icon: 'fa-user' },
+            { id: 'cat-break', name: 'Rest & Break', color: '#64748B', icon: 'fa-mug-hot' }
+        ];
+
+        // Hex color to RGB object generator
+        function hexToRgb(hex) {
+            let c = hex.replace('#', '');
+            if (c.length === 3) c = c.split('').map(x => x + x).join('');
+            const num = parseInt(c, 16);
+            return {
+                r: (num >> 16) & 255,
+                g: (num >> 8) & 255,
+                b: num & 255
             };
-
-            state.scheduledEvents.push(newEvent);
-            saveState();
-            renderCurrentView();
-            showToast(`Scheduled "${act.name}" at ${startTime}`);
         }
 
-        function toggleEventComplete(evtId) {
-            const evt = state.scheduledEvents.find(e => e.id === evtId);
-            if (evt) {
-                evt.completed = !evt.completed;
-                saveState();
-                renderCurrentView();
-            }
+        // Adjust hex brightness
+        function adjustHexBrightness(hex, percent) {
+            const num = parseInt(hex.replace('#',''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return '#' + (0x1000000 + (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 + (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 + (B < 255 ? (B < 1 ? 0 : B) : 255)).toString(16).slice(1);
         }
 
-        function removeScheduledEvent(evtId) {
-            state.scheduledEvents = state.scheduledEvents.filter(e => e.id !== evtId);
-            saveState();
-            renderCurrentView();
-            showToast("Event removed from schedule");
-        }
-
-        function openActivityModal(editId = null) {
-            document.getElementById('editActivityId').value = editId || '';
-            document.getElementById('activityModalTitle').innerText = editId ? 'Edit Saved Activity' : 'New Saved Activity';
-            
-            if (editId) {
-                const act = state.savedActivities.find(a => a.id === editId);
-                if (act) {
-                    document.getElementById('actNameInput').value = act.name;
-                    document.getElementById('actCategoryInput').value = act.category;
-                    document.getElementById('actDurationInput').value = act.duration;
-                    document.getElementById('actIconInput').value = act.icon;
-                }
-            } else {
-                document.getElementById('actNameInput').value = '';
-                document.getElementById('actCategoryInput').value = 'Academics';
-                document.getElementById('actDurationInput').value = 45;
-                document.getElementById('actIconInput').value = 'fa-book';
-            }
-
-            document.getElementById('activityModal').classList.remove('hidden');
-        }
-
-        function handleSaveActivity(e) {
-            e.preventDefault();
-            const editId = document.getElementById('editActivityId').value;
-            const name = document.getElementById('actNameInput').value.trim();
-            const category = document.getElementById('actCategoryInput').value;
-            const duration = parseInt(document.getElementById('actDurationInput').value, 10);
-            const icon = document.getElementById('actIconInput').value.trim() || 'fa-tag';
-
-            if (editId) {
-                const act = state.savedActivities.find(a => a.id === editId);
-                if (act) {
-                    act.name = name;
-                    act.category = category;
-                    act.duration = duration;
-                    act.icon = icon;
-                }
-            } else {
-                const newAct = {
-                    id: 'act_' + Date.now(),
-                    name,
-                    category,
-                    duration,
-                    icon
-                };
-                state.savedActivities.push(newAct);
-            }
-
-            saveState();
-            renderSidebar();
-            closeModal('activityModal');
-            showToast(editId ? "Activity updated" : "Saved activity created!");
-        }
-
-        function editActivity(id) {
-            openActivityModal(id);
-        }
-
-        function deleteActivity(id) {
-            state.savedActivities = state.savedActivities.filter(a => a.id !== id);
-            saveState();
-            renderSidebar();
-            showToast("Activity deleted from library");
-        }
-
-        function handleActivitySearch(val) {
-            state.activitySearchQuery = val;
-            renderSidebar();
-        }
-
-        function setCategoryFilter(cat) {
-            state.activeCategoryFilter = cat;
-            renderSidebar();
-        }
-
-        function handleLogMeal(e) {
-            e.preventDefault();
-            const name = document.getElementById('mealNameInput').value.trim();
-            const calories = parseInt(document.getElementById('mealCalInput').value, 10);
-            const protein = parseInt(document.getElementById('mealProteinInput').value || '0', 10);
-            const carbs = parseInt(document.getElementById('mealCarbsInput').value || '0', 10);
-            const fat = parseInt(document.getElementById('mealFatInput').value || '0', 10);
-
-            const newMeal = {
-                id: 'meal_' + Date.now(),
-                name,
-                calories,
-                protein,
-                carbs,
-                fat
-            };
-
-            state.loggedMeals.push(newMeal);
-            saveState();
-            renderFoodView();
-            e.target.reset();
-            showToast(`Logged "${name}" (${calories} kcal)`);
-        }
-
-        function deleteMeal(id) {
-            state.loggedMeals = state.loggedMeals.filter(m => m.id !== id);
-            saveState();
-            renderFoodView();
-            showToast("Meal removed");
-        }
-
-        function handleUpdateGoals(e) {
-            e.preventDefault();
-            state.nutritionGoals.calories = parseInt(document.getElementById('goalCalories').value, 10);
-            state.nutritionGoals.protein = parseInt(document.getElementById('goalProtein').value, 10);
-            state.nutritionGoals.carbs = parseInt(document.getElementById('goalCarbs').value, 10);
-            state.nutritionGoals.fat = parseInt(document.getElementById('goalFat').value, 10);
-
-            saveState();
-            renderFoodView();
-            showToast("Nutrition goals updated!");
-        }
-
-        function saveWeightLog() {
-            const val = document.getElementById('weightInput').value;
-            if (val) {
-                showToast(`Logged morning weight: ${val} kg`);
-            }
-        }
-
-        function openSettingsModal() {
-            document.getElementById('settingStartHour').value = state.settings.startHour;
-            document.getElementById('settingEndHour').value = state.settings.endHour;
-            document.getElementById('settingSlotInterval').value = state.settings.slotInterval;
-            document.getElementById('settingsModal').classList.remove('hidden');
-        }
-
-        function handleSaveSettings(e) {
-            e.preventDefault();
-            const sHour = parseInt(document.getElementById('settingStartHour').value, 10);
-            const eHour = parseInt(document.getElementById('settingEndHour').value, 10);
-            const interval = parseInt(document.getElementById('settingSlotInterval').value, 10);
-
-            if (sHour >= eHour) {
-                showToast("Start hour must be earlier than End hour", true);
-                return;
-            }
-
-            state.settings.startHour = sHour;
-            state.settings.endHour = eHour;
-            state.settings.slotInterval = interval;
-
-            saveState();
-            closeModal('settingsModal');
-            renderCurrentView();
-            showToast("Schedule grid settings applied!");
-        }
-
-        function toggleTheme() {
-            state.settings.darkMode = !state.settings.darkMode;
-            if (state.settings.darkMode) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-            saveState();
-        }
-
-        /* POMODORO TIMER TIMER LOGIC */
-        let pomoInterval = null;
-        let pomoSecondsLeft = 25 * 60;
-        let pomoTotalSeconds = 25 * 60;
-        let pomoIsRunning = false;
-
-        function openPomodoroModal() {
-            document.getElementById('pomodoroModal').classList.remove('hidden');
-        }
-
-        function togglePomodoro() {
-            const btn = document.getElementById('pomoStartBtn');
-            if (pomoIsRunning) {
-                clearInterval(pomoInterval);
-                pomoIsRunning = false;
-                btn.innerText = "Resume Session";
-                btn.className = "flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-red-500/20";
-                document.getElementById('pomoStatusText').innerText = "Paused";
-            } else {
-                const workMins = parseInt(document.getElementById('pomoWorkInput').value || '25', 10);
-                if (!pomoInterval && pomoSecondsLeft === pomoTotalSeconds) {
-                    pomoSecondsLeft = workMins * 60;
-                    pomoTotalSeconds = workMins * 60;
-                }
-                
-                pomoIsRunning = true;
-                btn.innerText = "Pause Session";
-                btn.className = "flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-amber-500/20";
-                document.getElementById('pomoStatusText').innerText = "Focusing...";
-
-                pomoInterval = setInterval(() => {
-                    pomoSecondsLeft--;
-                    updatePomoDisplay();
-
-                    if (pomoSecondsLeft <= 0) {
-                        clearInterval(pomoInterval);
-                        pomoIsRunning = false;
-                        playPomoSound();
-                        showToast("Pomodoro session completed! Time for a break.");
-                        document.getElementById('pomoStatusText').innerText = "Session Done!";
-                        btn.innerText = "Start Session";
-                    }
-                }, 1000);
-            }
-        }
-
-        function resetPomodoro() {
-            clearInterval(pomoInterval);
-            pomoIsRunning = false;
-            const workMins = parseInt(document.getElementById('pomoWorkInput').value || '25', 10);
-            pomoSecondsLeft = workMins * 60;
-            pomoTotalSeconds = workMins * 60;
-            updatePomoDisplay();
-            document.getElementById('pomoStartBtn').innerText = "Start Session";
-            document.getElementById('pomoStatusText').innerText = "Ready to Focus";
-        }
-
-        function updatePomoDisplay() {
-            const m = Math.floor(pomoSecondsLeft / 60).toString().padStart(2, '0');
-            const s = (pomoSecondsLeft % 60).toString().padStart(2, '0');
-            document.getElementById('pomoDisplay').innerText = `${m}:${s}`;
-
-            const ring = document.getElementById('pomoRing');
-            if (ring) {
-                const fraction = pomoSecondsLeft / pomoTotalSeconds;
-                const offset = 263.89 * (1 - fraction);
-                ring.style.strokeDashoffset = offset;
-            }
-        }
-
-        function playPomoSound() {
+        // Sound Synthesizer via Web Audio API (No external sound files required)
+        function playCompletionBeep() {
             try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
                 const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5 tone
-                osc.connect(ctx.destination);
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3); // A5
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.5);
-            } catch (e) {}
+            } catch (e) {
+                console.log("Audio not allowed without gesture", e);
+            }
         }
 
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
-            const dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `FlexSchedule_Backup_${new Date().toISOString().slice(0,10)}.json`);
-            dlAnchorElem.click();
-            showToast("Backup exported successfully!");
-        }
+        function App() {
+            // Theme State
+            const [darkMode, setDarkMode] = useState(() => {
+                const saved = localStorage.getItem('flex_dark_mode');
+                return saved ? JSON.parse(saved) : false;
+            });
 
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+            // Primary Accent Color State
+            const [accentColor, setAccentColor] = useState(() => {
+                return localStorage.getItem('flex_accent_color') || '#1A73E8';
+            });
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (imported && typeof imported === 'object') {
-                        state = { ...state, ...imported };
-                        saveState();
-                        initApp();
-                        showToast("Data imported successfully!");
-                    }
-                } catch (err) {
-                    showToast("Failed to parse JSON backup file", true);
+            // Grid Settings
+            const [gridSettings, setGridSettings] = useState(() => {
+                const saved = localStorage.getItem('flex_grid_settings');
+                return saved ? JSON.parse(saved) : { startHour: 7, endHour: 20, interval: 30 };
+            });
+
+            // Categories
+            const [categories, setCategories] = useState(() => {
+                const saved = localStorage.getItem('flex_categories');
+                return saved ? JSON.parse(saved) : DEFAULT_CATEGORIES;
+            });
+
+            // Saved Activities Library
+            const [savedActivities, setSavedActivities] = useState(() => {
+                const saved = localStorage.getItem('flex_saved_activities');
+                return saved ? JSON.parse(saved) : [
+                    { id: 'act-1', title: 'Deep Work Session', categoryId: 'cat-work', duration: 60, color: '#1A73E8', icon: 'fa-laptop-code' },
+                    { id: 'act-2', title: 'Daily Standup Call', categoryId: 'cat-work', duration: 30, color: '#1A73E8', icon: 'fa-users' },
+                    { id: 'act-3', title: 'Gym Workout', categoryId: 'cat-health', duration: 45, color: '#10B981', icon: 'fa-dumbbell' },
+                    { id: 'act-4', title: 'Focused Reading', categoryId: 'cat-study', duration: 30, color: '#8B5CF6', icon: 'fa-book' }
+                ];
+            });
+
+            // Grid Time Blocks (Pure Clean Initial State: Empty array)
+            const [blocks, setBlocks] = useState(() => {
+                const saved = localStorage.getItem('flex_schedule_blocks');
+                return saved ? JSON.parse(saved) : [];
+            });
+
+            // Food Tracker State (Pure Clean Initial State: 0 kcal, no meals)
+            const [foodData, setFoodData] = useState(() => {
+                const saved = localStorage.getItem('flex_food_data');
+                return saved ? JSON.parse(saved) : {
+                    goals: { kcal: 2000, protein: 140, carbs: 220, fat: 65, water: 8 },
+                    meals: [],
+                    waterGlasses: 0,
+                    weightLogs: []
+                };
+            });
+
+            // Active Modals & Views State
+            const [activeModal, setActiveModal] = useState(null); // 'settings', 'pomodoro', 'food', 'newActivity', 'manageCategories', 'exportImport', 'editBlock'
+            const [editingBlock, setEditingBlock] = useState(null);
+            const [newActivityForm, setNewActivityForm] = useState({ title: '', categoryId: 'cat-work', duration: 30, color: '#1A73E8', icon: 'fa-tasks' });
+            const [newCategoryForm, setNewCategoryForm] = useState({ name: '', color: '#1A73E8', icon: 'fa-folder' });
+            
+            // Drag and Drop state
+            const [draggedActivity, setDraggedActivity] = useState(null);
+            const [toastMessage, setToastMessage] = useState(null);
+
+            // Sync Accent Dynamic CSS Variables
+            useEffect(() => {
+                const rgb = hexToRgb(accentColor);
+                const hoverHex = adjustHexBrightness(accentColor, -15);
+                const root = document.documentElement;
+                
+                root.style.setProperty('--primary', accentColor);
+                root.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+                root.style.setProperty('--primary-hover', hoverHex);
+                root.style.setProperty('--primary-light', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.12)`);
+                root.style.setProperty('--primary-border', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`);
+                root.style.setProperty('--primary-ring', `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`);
+
+                localStorage.setItem('flex_accent_color', accentColor);
+            }, [accentColor]);
+
+            // Sync Dark Mode
+            useEffect(() => {
+                if (darkMode) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
                 }
+                localStorage.setItem('flex_dark_mode', JSON.stringify(darkMode));
+            }, [darkMode]);
+
+            // Persistence Effects
+            useEffect(() => { localStorage.setItem('flex_grid_settings', JSON.stringify(gridSettings)); }, [gridSettings]);
+            useEffect(() => { localStorage.setItem('flex_categories', JSON.stringify(categories)); }, [categories]);
+            useEffect(() => { localStorage.setItem('flex_saved_activities', JSON.stringify(savedActivities)); }, [savedActivities]);
+            useEffect(() => { localStorage.setItem('flex_schedule_blocks', JSON.stringify(blocks)); }, [blocks]);
+            useEffect(() => { localStorage.setItem('flex_food_data', JSON.stringify(foodData)); }, [foodData]);
+
+            // Toast Notifications Helper
+            const showToast = (msg) => {
+                setToastMessage(msg);
+                setTimeout(() => setToastMessage(null), 3000);
             };
-            reader.readAsText(file);
-        }
 
-        function confirmClearAll() {
-            document.getElementById('clearConfirmModal').classList.remove('hidden');
-        }
+            // Add a new block to time grid
+            const handleAddBlockToTime = (startMinutes, activity = null) => {
+                const duration = activity ? activity.duration : gridSettings.interval;
+                const endMinutes = startMinutes + duration;
 
-        function executeClearAll() {
-            localStorage.removeItem(STORAGE_KEY);
-            state = {
-                currentView: 'daily',
-                selectedDayIndex: new Date().getDay() === 0 ? 6 : new Date().getDay() - 1,
-                currentMonthOffset: 0,
-                settings: { startHour: 7, endHour: 20, slotInterval: 30, darkMode: state.settings.darkMode },
-                savedActivities: [],
-                scheduledEvents: [], // Clean ZERO
-                loggedMeals: [],     // Clean ZERO
-                nutritionGoals: { calories: 2000, protein: 150, carbs: 220, fat: 65 },
-                weightLogs: [],
-                activeCategoryFilter: 'All',
-                activitySearchQuery: ''
+                const newBlock = {
+                    id: 'block-' + Date.now(),
+                    title: activity ? activity.title : 'New Scheduled Task',
+                    categoryId: activity ? activity.categoryId : (categories[0]?.id || 'cat-work'),
+                    startMinutes,
+                    endMinutes,
+                    color: activity ? (activity.color || categories.find(c => c.id === activity.categoryId)?.color || accentColor) : accentColor,
+                    completed: false,
+                    notes: ''
+                };
+
+                setBlocks(prev => [...prev, newBlock]);
+                showToast(`Added "${newBlock.title}" to schedule`);
             };
-            saveState();
-            closeModal('clearConfirmModal');
-            initApp();
-            showToast("All data cleared!");
+
+            // Toggle block completion
+            const toggleBlockComplete = (id) => {
+                setBlocks(prev => prev.map(b => b.id === id ? { ...b, completed: !b.completed } : b));
+            };
+
+            // Delete block
+            const deleteBlock = (id) => {
+                setBlocks(prev => prev.filter(b => b.id !== id));
+                showToast("Task removed from schedule");
+            };
+
+            // Resize Block Duration
+            const resizeBlock = (id, deltaMinutes) => {
+                setBlocks(prev => prev.map(b => {
+                    if (b.id === id) {
+                        const newEnd = Math.max(b.startMinutes + 15, b.endMinutes + deltaMinutes);
+                        return { ...b, endMinutes: newEnd };
+                    }
+                    return b;
+                }));
+            };
+
+            // Calculate Day Statistics
+            const stats = useMemo(() => {
+                const totalMinutes = blocks.reduce((acc, b) => acc + (b.endMinutes - b.startMinutes), 0);
+                const completedMinutes = blocks.filter(b => b.completed).reduce((acc, b) => acc + (b.endMinutes - b.startMinutes), 0);
+                const totalHours = (totalMinutes / 60).toFixed(1);
+                const completedHours = (completedMinutes / 60).toFixed(1);
+                const percent = totalMinutes > 0 ? Math.round((completedMinutes / totalMinutes) * 100) : 0;
+                return { totalMinutes, completedMinutes, totalHours, completedHours, percent };
+            }, [blocks]);
+
+            return (
+                <div className="h-full flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+                    
+                    {/* TOP NAVBAR */}
+                    <header className="h-16 px-4 md:px-6 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between shrink-0 shadow-sm z-20">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 rounded-xl custom-accent-bg flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                                <i className="fa-solid fa-calendar-check text-xl"></i>
+                            </div>
+                            <div>
+                                <h1 className="font-bold text-lg leading-tight tracking-tight flex items-center gap-2">
+                                    FlexSchedule
+                                    <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-medium border border-slate-200 dark:border-slate-600">v2.5 Pro</span>
+                                </h1>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Dynamic Schedule & Visual Time Canvas</p>
+                            </div>
+                        </div>
+
+                        {/* Top Actions & Color Accent Quick Picker */}
+                        <div className="flex items-center space-x-2 sm:space-x-3">
+                            {/* Accent Color Direct Quick Switcher */}
+                            <div className="relative group flex items-center bg-slate-100 dark:bg-slate-700/60 p-1.5 rounded-xl border border-slate-200 dark:border-slate-600">
+                                <span className="text-xs text-slate-500 dark:text-slate-400 px-2 font-medium hidden md:inline">Accent:</span>
+                                <div className="flex items-center space-x-1">
+                                    {ACCENT_PRESETS.slice(0, 5).map(p => (
+                                        <button
+                                            key={p.hex}
+                                            onClick={() => setAccentColor(p.hex)}
+                                            className={`w-6 h-6 rounded-full transition-transform transform hover:scale-110 flex items-center justify-center ${accentColor === p.hex ? 'ring-2 ring-offset-2 ring-slate-400 dark:ring-slate-300 scale-105' : 'opacity-80 hover:opacity-100'}`}
+                                            style={{ backgroundColor: p.hex }}
+                                            title={p.name}
+                                        >
+                                            {accentColor === p.hex && <i className="fa-solid fa-check text-[10px] text-white"></i>}
+                                        </button>
+                                    ))}
+                                    {/* Custom Picker trigger */}
+                                    <button
+                                        onClick={() => setActiveModal('settings')}
+                                        className="w-6 h-6 rounded-full border border-dashed border-slate-400 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center justify-center text-xs ml-1 hover:bg-slate-200 dark:hover:bg-slate-600"
+                                        title="More Accent Settings"
+                                    >
+                                        <i className="fa-solid fa-palette"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Focus Studio Button */}
+                            <button
+                                onClick={() => setActiveModal('pomodoro')}
+                                className="px-3 py-2 rounded-xl text-sm font-medium bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center space-x-2"
+                                title="Pomodoro Focus Timer"
+                            >
+                                <i className="fa-solid fa-stopwatch custom-accent-text"></i>
+                                <span className="hidden sm:inline">Focus Studio</span>
+                            </button>
+
+                            {/* Food Tracker Button */}
+                            <button
+                                onClick={() => setActiveModal('food')}
+                                className="px-3 py-2 rounded-xl text-sm font-medium bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center space-x-2"
+                                title="Food & Macros Tracker"
+                            >
+                                <i className="fa-solid fa-utensils custom-accent-text"></i>
+                                <span className="hidden sm:inline">Food Log</span>
+                            </button>
+
+                            {/* Settings */}
+                            <button
+                                onClick={() => setActiveModal('settings')}
+                                className="p-2 w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center justify-center text-slate-600 dark:text-slate-300"
+                                title="Grid & Appearance Settings"
+                            >
+                                <i className="fa-solid fa-sliders text-base"></i>
+                            </button>
+
+                            {/* Dark Mode Toggle */}
+                            <button
+                                onClick={() => setDarkMode(!darkMode)}
+                                className="p-2 w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center justify-center text-slate-600 dark:text-slate-300"
+                                title="Toggle Dark/Light Mode"
+                            >
+                                <i className={`fa-solid ${darkMode ? 'fa-sun text-amber-400' : 'fa-moon text-indigo-500'} text-base`}></i>
+                            </button>
+
+                            {/* JSON Data Backup */}
+                            <button
+                                onClick={() => setActiveModal('exportImport')}
+                                className="p-2 w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center justify-center text-slate-600 dark:text-slate-300"
+                                title="Export / Import Data"
+                            >
+                                <i className="fa-solid fa-file-export text-base"></i>
+                            </button>
+                        </div>
+                    </header>
+
+                    {/* MAIN CONTENT AREA */}
+                    <div className="flex-1 flex overflow-hidden">
+                        
+                        {/* LEFT SIDEBAR - Saved Activities & Daily Stats */}
+                        {}
+                        <aside className="w-80 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex flex-col shrink-0 hidden lg:flex">
+                            
+                            {/* Daily Progress Widget */}
+                            <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Today's Progress</span>
+                                    <span className="text-xs font-bold custom-accent-text">{stats.percent}% Completed</span>
+                                </div>
+                                <div className="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden mb-3">
+                                    <div 
+                                        className="h-full custom-accent-bg transition-all duration-500 rounded-full"
+                                        style={{ width: `${stats.percent}%` }}
+                                    ></div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-center">
+                                    <div className="bg-white dark:bg-slate-700/50 p-2 rounded-lg border border-slate-200/60 dark:border-slate-600/50">
+                                        <div className="text-xs text-slate-400">Scheduled</div>
+                                        <div className="text-base font-bold">{stats.totalHours} hrs</div>
+                                    </div>
+                                    <div className="bg-white dark:bg-slate-700/50 p-2 rounded-lg border border-slate-200/60 dark:border-slate-600/50">
+                                        <div className="text-xs text-slate-400">Completed</div>
+                                        <div className="text-base font-bold custom-accent-text">{stats.completedHours} hrs</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Saved Activity Library Header */}
+                            <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <i className="fa-solid fa-shapes text-sm custom-accent-text"></i>
+                                    <h2 className="font-semibold text-sm">Activity Library</h2>
+                                </div>
+                                <button
+                                    onClick={() => setActiveModal('newActivity')}
+                                    className="px-2.5 py-1 text-xs rounded-lg custom-accent-bg text-white hover:opacity-90 transition font-medium flex items-center space-x-1"
+                                >
+                                    <i className="fa-solid fa-plus text-[10px]"></i>
+                                    <span>New</span>
+                                </button>
+                            </div>
+
+                            {/* Draggable Saved Activities List */}
+                            <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+                                <p className="text-xs text-slate-400 mb-2">Drag activities directly onto the time grid or tap to add:</p>
+                                {savedActivities.map(act => {
+                                    const cat = categories.find(c => c.id === act.categoryId);
+                                    const actColor = act.color || cat?.color || accentColor;
+                                    return (
+                                        <div
+                                            key={act.id}
+                                            draggable
+                                            onDragStart={(e) => {
+                                                e.dataTransfer.setData('application/json', JSON.stringify(act));
+                                                setDraggedActivity(act);
+                                            }}
+                                            onDragEnd={() => setDraggedActivity(null)}
+                                            className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-750 hover:shadow-md transition cursor-grab active:cursor-grabbing flex items-center justify-between group"
+                                            style={{ borderLeftWidth: '4px', borderLeftColor: actColor }}
+                                        >
+                                            <div className="flex items-center space-x-3 overflow-hidden">
+                                                <div 
+                                                    className="w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 shadow-xs"
+                                                    style={{ backgroundColor: actColor }}
+                                                >
+                                                    <i className={`fa-solid ${act.icon || 'fa-tasks'} text-xs`}></i>
+                                                </div>
+                                                <div className="truncate">
+                                                    <div className="font-medium text-sm truncate">{act.title}</div>
+                                                    <div className="text-xs text-slate-400 flex items-center space-x-2">
+                                                        <span>{cat?.name || 'General'}</span>
+                                                        <span>•</span>
+                                                        <span>{act.duration} min</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => handleAddBlockToTime(gridSettings.startHour * 60, act)}
+                                                className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:custom-accent-bg hover:text-white transition text-xs"
+                                                title="Add to canvas starting hour"
+                                            >
+                                                <i className="fa-solid fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Category Management Drawer Button */}
+                            <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                                <button
+                                    onClick={() => setActiveModal('manageCategories')}
+                                    className="w-full py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 transition flex items-center justify-center space-x-2"
+                                >
+                                    <i className="fa-solid fa-layer-group text-slate-400"></i>
+                                    <span>Manage Categories & Colors</span>
+                                </button>
+                            </div>
+                        </aside>
+
+                        {/* MAIN TIME GRID CANVAS */}
+                        {}
+                        <main className="flex-1 flex flex-col overflow-hidden bg-slate-100/60 dark:bg-slate-900/80">
+                            
+                            {/* Grid Controls Header */}
+                            <div className="p-3 sm:p-4 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                                <div className="flex items-center space-x-3">
+                                    <span className="font-bold text-base sm:text-lg">Today's Canvas</span>
+                                    <span className="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 font-medium">
+                                        {blocks.length} {blocks.length === 1 ? 'task' : 'tasks'} scheduled
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                    {/* Interval Selector */}
+                                    <div className="flex items-center bg-slate-100 dark:bg-slate-700 p-1 rounded-xl text-xs font-medium">
+                                        <span className="px-2 text-slate-400 hidden sm:inline">Slot:</span>
+                                        {[15, 30, 45, 60].map(int => (
+                                            <button
+                                                key={int}
+                                                onClick={() => setGridSettings(prev => ({ ...prev, interval: int }))}
+                                                className={`px-2.5 py-1 rounded-lg transition ${gridSettings.interval === int ? 'custom-accent-bg text-white shadow-xs font-semibold' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'}`}
+                                            >
+                                                {int}m
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Add Custom Quick Block */}
+                                    <button
+                                        onClick={() => handleAddBlockToTime(gridSettings.startHour * 60)}
+                                        className="px-3 py-1.5 rounded-xl custom-accent-bg text-white text-xs font-medium hover:opacity-90 transition flex items-center space-x-1.5"
+                                    >
+                                        <i className="fa-solid fa-plus"></i>
+                                        <span>Add Block</span>
+                                    </button>
+
+                                    {/* Reset Canvas Button */}
+                                    {blocks.length > 0 && (
+                                        <button
+                                            onClick={() => {
+                                                if (blocks.length > 0) setBlocks([]);
+                                            }}
+                                            className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-xs"
+                                            title="Clear Schedule Canvas"
+                                        >
+                                            <i className="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Canvas Scrollable Slot Grid */}
+                            <div className="flex-1 overflow-y-auto p-4 sm:p-6 relative">
+                                
+                                {/* Pure Clean Initial State Notification Banner if 0 blocks */}
+                                {blocks.length === 0 && (
+                                    <div className="max-w-md mx-auto my-8 p-6 text-center rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+                                        <div className="w-12 h-12 rounded-2xl custom-accent-light-bg custom-accent-text flex items-center justify-center mx-auto mb-3 text-xl">
+                                            <i className="fa-solid fa-calendar-plus"></i>
+                                        </div>
+                                        <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-base mb-1">Canvas is Clean & Ready</h3>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+                                            Your schedule starts completely empty. Drag activities from the library on the left, or tap any time slot on the grid below to create a block.
+                                        </p>
+                                        <div className="flex items-center justify-center space-x-2">
+                                            <button
+                                                onClick={() => setActiveModal('newActivity')}
+                                                className="px-3 py-1.5 rounded-xl custom-accent-bg text-white text-xs font-medium"
+                                            >
+                                                Create Activity
+                                            </button>
+                                            <button
+                                                onClick={() => handleAddBlockToTime(gridSettings.startHour * 60)}
+                                                className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium"
+                                            >
+                                                Add First Slot
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Interactive Time Slots Matrix */}
+                                <div className="max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                                    {Array.from({ length: Math.ceil(((gridSettings.endHour - gridSettings.startHour) * 60) / gridSettings.interval) }).map((_, idx) => {
+                                        const slotMinutes = (gridSettings.startHour * 60) + (idx * gridSettings.interval);
+                                        const hour = Math.floor(slotMinutes / 60);
+                                        const mins = slotMinutes % 60;
+                                        const timeString = `${hour.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+
+                                        // Find blocks matching this slot start time
+                                        const slotBlocks = blocks.filter(b => b.startMinutes >= slotMinutes && b.startMinutes < slotMinutes + gridSettings.interval);
+
+                                        return (
+                                            <div
+                                                key={slotMinutes}
+                                                onDragOver={(e) => e.preventDefault()}
+                                                onDrop={(e) => {
+                                                    e.preventDefault();
+                                                    if (draggedActivity) {
+                                                        handleAddBlockToTime(slotMinutes, draggedActivity);
+                                                    }
+                                                }}
+                                                className="min-h-[56px] border-b border-slate-100 dark:border-slate-700/50 flex items-start group hover:bg-slate-50/80 dark:hover:bg-slate-750/50 transition relative"
+                                            >
+                                                {/* Time Label Column */}
+                                                <div className="w-20 sm:w-24 p-3 border-r border-slate-100 dark:border-slate-700/50 text-xs font-medium text-slate-400 shrink-0 select-none">
+                                                    {timeString}
+                                                </div>
+
+                                                {/* Drop Target & Block Render Container */}
+                                                <div 
+                                                    onClick={() => {
+                                                        if (slotBlocks.length === 0) handleAddBlockToTime(slotMinutes);
+                                                    }}
+                                                    className="flex-1 p-2 min-h-[56px] flex flex-wrap gap-2 items-center cursor-pointer"
+                                                >
+                                                    {slotBlocks.map(block => {
+                                                        const cat = categories.find(c => c.id === block.categoryId);
+                                                        const blockColor = block.color || cat?.color || accentColor;
+                                                        const blockDuration = block.endMinutes - block.startMinutes;
+
+                                                        return (
+                                                            <div
+                                                                key={block.id}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setEditingBlock(block);
+                                                                    setActiveModal('editBlock');
+                                                                }}
+                                                                className={`rounded-xl p-3 text-white transition shadow-sm hover:shadow-md flex items-center justify-between group/block relative overflow-hidden flex-1 min-w-[240px] ${block.completed ? 'opacity-65 line-through' : ''}`}
+                                                                style={{ backgroundColor: blockColor }}
+                                                            >
+                                                                <div className="flex items-center space-x-3 overflow-hidden">
+                                                                    {/* Custom Checkbox Toggle */}
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            toggleBlockComplete(block.id);
+                                                                        }}
+                                                                        className="w-5 h-5 rounded-md bg-white/20 hover:bg-white/40 flex items-center justify-center text-white transition shrink-0"
+                                                                    >
+                                                                        {block.completed && <i className="fa-solid fa-check text-xs"></i>}
+                                                                    </button>
+
+                                                                    <div className="truncate">
+                                                                        <div className="font-semibold text-xs sm:text-sm truncate leading-tight">{block.title}</div>
+                                                                        <div className="text-[11px] text-white/80 font-medium">
+                                                                            {Math.floor(block.startMinutes / 60)}:{(block.startMinutes % 60).toString().padStart(2, '0')} - {Math.floor(block.endMinutes / 60)}:{(block.endMinutes % 60).toString().padStart(2, '0')} ({blockDuration}m)
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                {/* Block Hover Actions (Resize / Delete) */}
+                                                                <div className="flex items-center space-x-1 opacity-90 group-hover/block:opacity-100">
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            resizeBlock(block.id, -15);
+                                                                        }}
+                                                                        className="w-6 h-6 rounded-md bg-black/15 hover:bg-black/30 text-white flex items-center justify-center text-[10px]"
+                                                                        title="Decrease duration (-15m)"
+                                                                    >
+                                                                        <i className="fa-solid fa-minus"></i>
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            resizeBlock(block.id, 15);
+                                                                        }}
+                                                                        className="w-6 h-6 rounded-md bg-black/15 hover:bg-black/30 text-white flex items-center justify-center text-[10px]"
+                                                                        title="Increase duration (+15m)"
+                                                                    >
+                                                                        <i className="fa-solid fa-plus"></i>
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            deleteBlock(block.id);
+                                                                        }}
+                                                                        className="w-6 h-6 rounded-md bg-black/15 hover:bg-rose-600 text-white flex items-center justify-center text-[10px] ml-1"
+                                                                        title="Delete task"
+                                                                    >
+                                                                        <i className="fa-solid fa-xmark"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+
+                                                    {slotBlocks.length === 0 && (
+                                                        <span className="text-xs text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition italic">
+                                                            + Click or drag activity here
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+
+                    {}
+                    {/* SETTINGS MODAL (ACCENT & GRID CONFIG) */}
+                    {activeModal === 'settings' && (
+                        <Modal title="Settings & Accent Color Customizer" onClose={() => setActiveModal(null)}>
+                            <div className="space-y-6">
+                                {/* Primary Color Customizer */}
+                                <div>
+                                    <label className="block text-sm font-semibold mb-2">Primary Accent Color</label>
+                                    <p className="text-xs text-slate-400 mb-3">Select a preset accent or choose a custom brand hex color:</p>
+                                    
+                                    {/* Preset Chips */}
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                                        {ACCENT_PRESETS.map(preset => (
+                                            <button
+                                                key={preset.hex}
+                                                onClick={() => setAccentColor(preset.hex)}
+                                                className={`p-2.5 rounded-xl border text-xs font-medium flex items-center space-x-2 transition ${accentColor === preset.hex ? 'border-slate-800 dark:border-white ring-2 ring-slate-400 dark:ring-slate-500' : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                                            >
+                                                <span className="w-4 h-4 rounded-full shadow-xs shrink-0" style={{ backgroundColor: preset.hex }}></span>
+                                                <span className="truncate">{preset.name}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Custom HTML Color Picker */}
+                                    <div className="flex items-center space-x-3 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600">
+                                        <input
+                                            type="color"
+                                            value={accentColor}
+                                            onChange={(e) => setAccentColor(e.target.value)}
+                                            className="w-10 h-10 rounded-lg cursor-pointer border-0 bg-transparent"
+                                        />
+                                        <div>
+                                            <div className="text-xs font-semibold">Custom Color Picker</div>
+                                            <div className="text-xs text-slate-400 uppercase font-mono">{accentColor}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Dynamic Hours Settings */}
+                                <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
+                                    <label className="block text-sm font-semibold mb-2">Time Grid Hour Range</label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <span className="text-xs text-slate-400 block mb-1">Start Hour</span>
+                                            <select
+                                                value={gridSettings.startHour}
+                                                onChange={(e) => setGridSettings(prev => ({ ...prev, startHour: parseInt(e.target.value) }))}
+                                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium"
+                                            >
+                                                {Array.from({ length: 12 }, (_, i) => i + 4).map(h => (
+                                                    <option key={h} value={h}>{h}:00 AM/PM</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs text-slate-400 block mb-1">End Hour</span>
+                                            <select
+                                                value={gridSettings.endHour}
+                                                onChange={(e) => setGridSettings(prev => ({ ...prev, endHour: parseInt(e.target.value) }))}
+                                                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium"
+                                            >
+                                                {Array.from({ length: 12 }, (_, i) => i + 13).map(h => (
+                                                    <option key={h} value={h}>{h}:00</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end pt-2">
+                                    <button
+                                        onClick={() => setActiveModal(null)}
+                                        className="px-4 py-2 rounded-xl custom-accent-bg text-white text-xs font-semibold"
+                                    >
+                                        Done
+                                    </button>
+                                </div>
+                            </div>
+                        </Modal>
+                    )}
+
+                    {/* NEW SAVED ACTIVITY MODAL WITH COLOR PICKER */}
+                    {activeModal === 'newActivity' && (
+                        <Modal title="Create New Activity Template" onClose={() => setActiveModal(null)}>
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                if (!newActivityForm.title.trim()) return;
+                                const created = {
+                                    id: 'act-' + Date.now(),
+                                    ...newActivityForm
+                                };
+                                setSavedActivities(prev => [...prev, created]);
+                                setActiveModal(null);
+                                showToast(`Saved activity "${created.title}"`);
+                            }} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-semibold mb-1">Activity Title</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        placeholder="e.g., Sprint Planning, Jogging, Python Practice"
+                                        value={newActivityForm.title}
+                                        onChange={(e) => setNewActivityForm(prev => ({ ...prev, title: e.target.value }))}
+                                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1">Category</label>
+                                        <select
+                                            value={newActivityForm.categoryId}
+                                            onChange={(e) => {
+                                                const catId = e.target.value;
+                                                const cat = categories.find(c => c.id === catId);
+                                                setNewActivityForm(prev => ({
+                                                    ...prev,
+                                                    categoryId: catId,
+                                                    color: cat ? cat.color : prev.color
+                                                }));
+                                            }}
+                                            className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium"
+                                        >
+                                            {categories.map(c => (
+                                                <option key={c.id} value={c.id}>{c.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1">Default Duration (min)</label>
+                                        <input
+                                            type="number"
+                                            min="15"
+                                            step="15"
+                                            value={newActivityForm.duration}
+                                            onChange={(e) => setNewActivityForm(prev => ({ ...prev, duration: parseInt(e.target.value) || 15 }))}
+                                            className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Custom Activity Color Selector */}
+                                <div>
+                                    <label className="block text-xs font-semibold mb-1">Activity Specific Accent Color</label>
+                                    <div className="flex items-center space-x-3">
+                                        <input
+                                            type="color"
+                                            value={newActivityForm.color}
+                                            onChange={(e) => setNewActivityForm(prev => ({ ...prev, color: e.target.value }))}
+                                            className="w-9 h-9 rounded-lg border-0 bg-transparent cursor-pointer"
+                                        />
+                                        <span className="text-xs text-slate-400 uppercase font-mono">{newActivityForm.color}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end space-x-2 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveModal(null)}
+                                        className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 rounded-xl custom-accent-bg text-white text-xs font-semibold"
+                                    >
+                                        Save Activity
+                                    </button>
+                                </div>
+                            </form>
+                        </Modal>
+                    )}
+
+                    {/* MANAGE CATEGORIES MODAL */}
+                    {activeModal === 'manageCategories' && (
+                        <Modal title="Manage Categories & Specific Colors" onClose={() => setActiveModal(null)}>
+                            <div className="space-y-4">
+                                <p className="text-xs text-slate-400">Customize default category colors or create new tags:</p>
+
+                                <div className="space-y-2 max-h-60 overflow-y-auto">
+                                    {categories.map(cat => (
+                                        <div key={cat.id} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-750 border border-slate-200 dark:border-slate-700">
+                                            <div className="flex items-center space-x-3">
+                                                <input
+                                                    type="color"
+                                                    value={cat.color}
+                                                    onChange={(e) => {
+                                                        const newColor = e.target.value;
+                                                        setCategories(prev => prev.map(c => c.id === cat.id ? { ...c, color: newColor } : c));
+                                                    }}
+                                                    className="w-7 h-7 rounded-md cursor-pointer border-0 bg-transparent"
+                                                />
+                                                <span className="text-xs font-semibold">{cat.name}</span>
+                                            </div>
+                                            {categories.length > 1 && (
+                                                <button
+                                                    onClick={() => setCategories(prev => prev.filter(c => c.id !== cat.id))}
+                                                    className="text-xs text-slate-400 hover:text-rose-500 p-1"
+                                                >
+                                                    <i className="fa-solid fa-trash"></i>
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Add New Category Inline */}
+                                <form 
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        if (!newCategoryForm.name.trim()) return;
+                                        setCategories(prev => [...prev, {
+                                            id: 'cat-' + Date.now(),
+                                            name: newCategoryForm.name,
+                                            color: newCategoryForm.color,
+                                            icon: 'fa-folder'
+                                        }]);
+                                        setNewCategoryForm({ name: '', color: accentColor, icon: 'fa-folder' });
+                                    }}
+                                    className="flex items-center space-x-2 pt-2 border-t border-slate-200 dark:border-slate-700"
+                                >
+                                    <input
+                                        type="color"
+                                        value={newCategoryForm.color}
+                                        onChange={(e) => setNewCategoryForm(prev => ({ ...prev, color: e.target.value }))}
+                                        className="w-8 h-8 rounded-md cursor-pointer border-0 bg-transparent shrink-0"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="New Category Name..."
+                                        value={newCategoryForm.name}
+                                        onChange={(e) => setNewCategoryForm(prev => ({ ...prev, name: e.target.value }))}
+                                        className="flex-1 p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs"
+                                    />
+                                    <button type="submit" className="px-3 py-2 rounded-xl custom-accent-bg text-white text-xs font-semibold shrink-0">
+                                        Add
+                                    </button>
+                                </form>
+                            </div>
+                        </Modal>
+                    )}
+
+                    {/* EDIT BLOCK MODAL */}
+                    {activeModal === 'editBlock' && editingBlock && (
+                        <Modal title="Edit Time Grid Task" onClose={() => { setActiveModal(null); setEditingBlock(null); }}>
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                setBlocks(prev => prev.map(b => b.id === editingBlock.id ? editingBlock : b));
+                                setActiveModal(null);
+                                setEditingBlock(null);
+                            }} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-semibold mb-1">Task Title</label>
+                                    <input
+                                        type="text"
+                                        value={editingBlock.title}
+                                        onChange={(e) => setEditingBlock(prev => ({ ...prev, title: e.target.value }))}
+                                        className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-semibold mb-1">Task Color Override</label>
+                                    <div className="flex items-center space-x-3">
+                                        <input
+                                            type="color"
+                                            value={editingBlock.color || accentColor}
+                                            onChange={(e) => setEditingBlock(prev => ({ ...prev, color: e.target.value }))}
+                                            className="w-9 h-9 rounded-lg border-0 bg-transparent cursor-pointer"
+                                        />
+                                        <span className="text-xs text-slate-400 font-mono">{editingBlock.color}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between items-center pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            deleteBlock(editingBlock.id);
+                                            setActiveModal(null);
+                                        }}
+                                        className="text-xs text-rose-500 font-medium hover:underline"
+                                    >
+                                        Delete Task
+                                    </button>
+
+                                    <div className="flex space-x-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveModal(null)}
+                                            className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="px-4 py-2 rounded-xl custom-accent-bg text-white text-xs font-semibold"
+                                        >
+                                            Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </Modal>
+                    )}
+
+                    {/* POMODORO FOCUS STUDIO MODAL */}
+                    {}
+                    {activeModal === 'pomodoro' && <PomodoroModal onClose={() => setActiveModal(null)} accentColor={accentColor} />}
+
+                    {/* FOOD TRACKER DASHBOARD MODAL */}
+                    {}
+                    {activeModal === 'food' && (
+                        <FoodTrackerModal 
+                            foodData={foodData} 
+                            setFoodData={setFoodData} 
+                            onClose={() => setActiveModal(null)} 
+                            accentColor={accentColor}
+                        />
+                    )}
+
+                    {/* JSON BACKUP / IMPORT MODAL */}
+                    {activeModal === 'exportImport' && (
+                        <Modal title="Data Export & Restoration" onClose={() => setActiveModal(null)}>
+                            <div className="space-y-4">
+                                <p className="text-xs text-slate-400">Export your schedule, activity library, and settings as a JSON file, or restore from a previous file backup:</p>
+                                
+                                <div className="flex space-x-3">
+                                    <button
+                                        onClick={() => {
+                                            const payload = {
+                                                accentColor,
+                                                gridSettings,
+                                                categories,
+                                                savedActivities,
+                                                blocks,
+                                                foodData,
+                                                exportDate: new Date().toISOString()
+                                            };
+                                            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
+                                            const downloadAnchor = document.createElement('a');
+                                            downloadAnchor.setAttribute("href", dataStr);
+                                            downloadAnchor.setAttribute("download", `FlexSchedule_Backup_${new Date().toISOString().slice(0,10)}.json`);
+                                            document.body.appendChild(downloadAnchor);
+                                            downloadAnchor.click();
+                                            downloadAnchor.remove();
+                                            showToast("JSON Backup Downloaded!");
+                                        }}
+                                        className="flex-1 py-3 rounded-xl custom-accent-bg text-white text-xs font-semibold flex items-center justify-center space-x-2 shadow-sm"
+                                    >
+                                        <i className="fa-solid fa-download"></i>
+                                        <span>Download JSON File</span>
+                                    </button>
+                                </div>
+
+                                <div className="border-t border-slate-200 dark:border-slate-700 pt-3">
+                                    <label className="block text-xs font-semibold mb-2">Import JSON State</label>
+                                    <input
+                                        type="file"
+                                        accept=".json"
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (!file) return;
+                                            const reader = new FileReader();
+                                            reader.onload = (event) => {
+                                                try {
+                                                    const imported = JSON.parse(event.target.result);
+                                                    if (imported.accentColor) setAccentColor(imported.accentColor);
+                                                    if (imported.gridSettings) setGridSettings(imported.gridSettings);
+                                                    if (imported.categories) setCategories(imported.categories);
+                                                    if (imported.savedActivities) setSavedActivities(imported.savedActivities);
+                                                    if (imported.blocks) setBlocks(imported.blocks);
+                                                    if (imported.foodData) setFoodData(imported.foodData);
+                                                    setActiveModal(null);
+                                                    showToast("Backup restored successfully!");
+                                                } catch (err) {
+                                                    showToast("Invalid JSON file!");
+                                                }
+                                            };
+                                            reader.readAsText(file);
+                                        }}
+                                        className="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-slate-200 cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+                        </Modal>
+                    )}
+
+                    {/* Toast Notification Banner */}
+                    {toastMessage && (
+                        <div className="fixed bottom-5 right-5 z-50 px-4 py-3 rounded-xl bg-slate-900 text-white text-xs font-medium shadow-lg flex items-center space-x-2 animate-bounce">
+                            <i className="fa-solid fa-circle-check text-emerald-400"></i>
+                            <span>{toastMessage}</span>
+                        </div>
+                    )}
+                </div>
+            );
         }
 
-        function refreshQuote() {
-            const random = DEFAULT_QUOTES[Math.floor(Math.random() * DEFAULT_QUOTES.length)];
-            document.getElementById('quoteText').innerText = `"${random.quote}"`;
-            document.getElementById('quoteAuthor').innerText = `- ${random.author}`;
+        // GENERIC MODAL WRAPPER
+        function Modal({ title, children, onClose }) {
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden transform transition-all">
+                        <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                            <h3 className="font-bold text-sm sm:text-base">{title}</h3>
+                            <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                <i className="fa-solid fa-xmark text-base"></i>
+                            </button>
+                        </div>
+                        <div className="p-5">{children}</div>
+                    </div>
+                </div>
+            );
         }
 
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
+        // POMODORO FOCUS STUDIO COMPONENT
+        function PomodoroModal({ onClose, accentColor }) {
+            const [workTime, setWorkTime] = useState(25);
+            const [breakTime, setBreakTime] = useState(5);
+            const [secondsLeft, setSecondsLeft] = useState(25 * 60);
+            const [isRunning, setIsRunning] = useState(false);
+            const [mode, setMode] = useState('work'); // 'work' | 'break'
+
+            useEffect(() => {
+                let interval = null;
+                if (isRunning && secondsLeft > 0) {
+                    interval = setInterval(() => setSecondsLeft(prev => prev - 1), 1000);
+                } else if (secondsLeft === 0) {
+                    playCompletionBeep();
+                    if (mode === 'work') {
+                        setMode('break');
+                        setSecondsLeft(breakTime * 60);
+                    } else {
+                        setMode('work');
+                        setSecondsLeft(workTime * 60);
+                    }
+                }
+                return () => clearInterval(interval);
+            }, [isRunning, secondsLeft, mode, workTime, breakTime]);
+
+            const minutes = Math.floor(secondsLeft / 60);
+            const secs = secondsLeft % 60;
+            const totalDuration = (mode === 'work' ? workTime : breakTime) * 60;
+            const progress = ((totalDuration - secondsLeft) / totalDuration) * 100;
+
+            return (
+                <Modal title="Pomodoro Focus Studio" onClose={onClose}>
+                    <div className="text-center space-y-6">
+                        {/* Mode Indicator Badge */}
+                        <div className="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-xs font-semibold space-x-2">
+                            <span className={`w-2 h-2 rounded-full ${mode === 'work' ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
+                            <span className="capitalize">{mode === 'work' ? 'Deep Focus Session' : 'Relaxation Break'}</span>
+                        </div>
+
+                        {/* Animated Timer Circle Display */}
+                        <div className="relative w-48 h-48 mx-auto flex items-center justify-center">
+                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="6" className="text-slate-100 dark:text-slate-700" fill="none" />
+                                <circle 
+                                    cx="50" cy="50" r="42" 
+                                    stroke={accentColor} 
+                                    strokeWidth="6" 
+                                    strokeDasharray="263.89"
+                                    strokeDashoffset={263.89 - (263.89 * progress) / 100}
+                                    strokeLinecap="round" 
+                                    fill="none" 
+                                    className="transition-all duration-500"
+                                />
+                            </svg>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <span className="text-4xl font-extrabold tracking-tight font-mono">
+                                    {minutes.toString().padStart(2, '0')}:{secs.toString().padStart(2, '0')}
+                                </span>
+                                <span className="text-[11px] text-slate-400 mt-1 uppercase tracking-widest">{isRunning ? 'Running' : 'Paused'}</span>
+                            </div>
+                        </div>
+
+                        {/* Controls */}
+                        <div className="flex items-center justify-center space-x-3">
+                            <button
+                                onClick={() => setIsRunning(!isRunning)}
+                                className="px-6 py-2.5 rounded-xl custom-accent-bg text-white text-xs font-bold shadow-md hover:opacity-90 transition flex items-center space-x-2"
+                            >
+                                <i className={`fa-solid ${isRunning ? 'fa-pause' : 'fa-play'}`}></i>
+                                <span>{isRunning ? 'Pause' : 'Start Timer'}</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setIsRunning(false);
+                                    setSecondsLeft((mode === 'work' ? workTime : breakTime) * 60);
+                                }}
+                                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                                title="Reset Timer"
+                            >
+                                <i className="fa-solid fa-rotate-right"></i>
+                            </button>
+                        </div>
+
+                        {/* Duration Setup */}
+                        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-200 dark:border-slate-700 text-left">
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Work Duration (m)</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="90"
+                                    value={workTime}
+                                    onChange={(e) => {
+                                        const val = parseInt(e.target.value) || 25;
+                                        setWorkTime(val);
+                                        if (mode === 'work' && !isRunning) setSecondsLeft(val * 60);
+                                    }}
+                                    className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Break Duration (m)</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max="30"
+                                    value={breakTime}
+                                    onChange={(e) => {
+                                        const val = parseInt(e.target.value) || 5;
+                                        setBreakTime(val);
+                                        if (mode === 'break' && !isRunning) setSecondsLeft(val * 60);
+                                    }}
+                                    className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </Modal>
+            );
         }
 
-        function showToast(msg, isError = false) {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
+        // FOOD TRACKER DASHBOARD COMPONENT
+        function FoodTrackerModal({ foodData, setFoodData, onClose, accentColor }) {
+            const [mealInput, setMealInput] = useState({ name: '', kcal: '', protein: '', carbs: '', fat: '', type: 'Breakfast' });
 
-            const toast = document.createElement('div');
-            toast.className = `px-4 py-2.5 rounded-xl shadow-lg text-xs font-bold text-white flex items-center space-x-2 pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0 ${isError ? 'bg-red-600' : 'bg-google-blue'}`;
-            toast.innerHTML = `
-                <i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i>
-                <span>${msg}</span>
-            `;
+            const totalKcal = foodData.meals.reduce((acc, m) => acc + (parseInt(m.kcal) || 0), 0);
+            const totalProtein = foodData.meals.reduce((acc, m) => acc + (parseInt(m.protein) || 0), 0);
+            const totalCarbs = foodData.meals.reduce((acc, m) => acc + (parseInt(m.carbs) || 0), 0);
+            const totalFat = foodData.meals.reduce((acc, m) => acc + (parseInt(m.fat) || 0), 0);
 
-            container.appendChild(toast);
+            const handleAddMeal = (e) => {
+                e.preventDefault();
+                if (!mealInput.name || !mealInput.kcal) return;
+                setFoodData(prev => ({
+                    ...prev,
+                    meals: [...prev.meals, { ...mealInput, id: Date.now() }]
+                }));
+                setMealInput({ name: '', kcal: '', protein: '', carbs: '', fat: '', type: 'Breakfast' });
+            };
 
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
+            return (
+                <Modal title="Food & Macros Tracker" onClose={onClose}>
+                    <div className="space-y-5 max-h-[75vh] overflow-y-auto pr-1">
+                        
+                        {/* Kcal Summary Card */}
+                        <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-750 border border-slate-200 dark:border-slate-700">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Daily Calorie Target</span>
+                                <span className="text-sm font-bold custom-accent-text">{totalKcal} / {foodData.goals.kcal} kcal</span>
+                            </div>
+                            <div className="w-full bg-slate-200 dark:bg-slate-700 h-3 rounded-full overflow-hidden mb-4">
+                                <div 
+                                    className="h-full custom-accent-bg transition-all rounded-full"
+                                    style={{ width: `${Math.min(100, (totalKcal / foodData.goals.kcal) * 100)}%` }}
+                                ></div>
+                            </div>
 
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+                            {/* Macro Breakdown Mini Grid */}
+                            <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                                <div className="bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200/60 dark:border-slate-700">
+                                    <div className="text-slate-400 text-[10px]">Protein</div>
+                                    <div className="font-bold text-slate-800 dark:text-slate-200">{totalProtein}g / {foodData.goals.protein}g</div>
+                                </div>
+                                <div className="bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200/60 dark:border-slate-700">
+                                    <div className="text-slate-400 text-[10px]">Carbs</div>
+                                    <div className="font-bold text-slate-800 dark:text-slate-200">{totalCarbs}g / {foodData.goals.carbs}g</div>
+                                </div>
+                                <div className="bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200/60 dark:border-slate-700">
+                                    <div className="text-slate-400 text-[10px]">Fat</div>
+                                    <div className="font-bold text-slate-800 dark:text-slate-200">{totalFat}g / {foodData.goals.fat}g</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Water Intake Quick Tracker */}
+                        <div className="p-3.5 rounded-2xl bg-blue-50/50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                                <i className="fa-solid fa-glass-water text-blue-500 text-base"></i>
+                                <div>
+                                    <div className="text-xs font-semibold">Water Intake</div>
+                                    <div className="text-[11px] text-slate-400">{foodData.waterGlasses} / {foodData.goals.water} Glasses</div>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                                <button
+                                    onClick={() => setFoodData(prev => ({ ...prev, waterGlasses: Math.max(0, prev.waterGlasses - 1) }))}
+                                    className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border text-xs font-bold"
+                                >
+                                    -
+                                </button>
+                                <button
+                                    onClick={() => setFoodData(prev => ({ ...prev, waterGlasses: prev.waterGlasses + 1 }))}
+                                    className="w-7 h-7 rounded-lg bg-blue-500 text-white text-xs font-bold shadow-xs"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Add Meal Form */}
+                        <form onSubmit={handleAddMeal} className="space-y-3 bg-white dark:bg-slate-800 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700">
+                            <div className="text-xs font-bold text-slate-600 dark:text-slate-300">Log Food Item</div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Meal / Item Name..."
+                                    value={mealInput.name}
+                                    onChange={(e) => setMealInput(prev => ({ ...prev, name: e.target.value }))}
+                                    className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-750 text-xs"
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Calories (kcal)..."
+                                    value={mealInput.kcal}
+                                    onChange={(e) => setMealInput(prev => ({ ...prev, kcal: e.target.value }))}
+                                    className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-750 text-xs"
+                                />
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                                <input
+                                    type="number"
+                                    placeholder="Protein (g)"
+                                    value={mealInput.protein}
+                                    onChange={(e) => setMealInput(prev => ({ ...prev, protein: e.target.value }))}
+                                    className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-750 text-xs"
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Carbs (g)"
+                                    value={mealInput.carbs}
+                                    onChange={(e) => setMealInput(prev => ({ ...prev, carbs: e.target.value }))}
+                                    className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-750 text-xs"
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Fat (g)"
+                                    value={mealInput.fat}
+                                    onChange={(e) => setMealInput(prev => ({ ...prev, fat: e.target.value }))}
+                                    className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-750 text-xs"
+                                />
+                            </div>
+                            <button type="submit" className="w-full py-2 rounded-xl custom-accent-bg text-white text-xs font-semibold">
+                                Add Meal Log
+                            </button>
+                        </form>
+
+                        {/* Meal Log List */}
+                        <div className="space-y-2">
+                            <div className="text-xs font-semibold text-slate-500">Logged Meals</div>
+                            {foodData.meals.length === 0 ? (
+                                <p className="text-xs text-slate-400 italic">No meals logged for today yet.</p>
+                            ) : (
+                                foodData.meals.map(m => (
+                                    <div key={m.id} className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+                                        <div>
+                                            <div className="font-semibold">{m.name}</div>
+                                            <div className="text-[10px] text-slate-400">P: {m.protein || 0}g • C: {m.carbs || 0}g • F: {m.fat || 0}g</div>
+                                        </div>
+                                        <div className="flex items-center space-x-3">
+                                            <span className="font-bold custom-accent-text">{m.kcal} kcal</span>
+                                            <button
+                                                onClick={() => setFoodData(prev => ({ ...prev, meals: prev.meals.filter(item => item.id !== m.id) }))}
+                                                className="text-slate-400 hover:text-rose-500"
+                                            >
+                                                <i className="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </Modal>
+            );
         }
 
-        // Initialize application on window load
-        window.onload = function() {
-            initApp();
-        };
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
