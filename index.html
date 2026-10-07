@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlexSchedule — Google-Grade Productivity Command Center</title>
-    <!-- Tailwind CSS CDN -->
+    <title>FlexSchedule - Intelligent Productivity & Daily Planner</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -15,27 +15,28 @@
                         google: {
                             blue: '#1A73E8',
                             hoverBlue: '#1557B0',
-                            bgLight: '#F8FAFD',
-                            bgDark: '#121212',
-                            cardDark: '#1E1E1E',
-                            borderDark: '#2D2D2D',
+                            bgLight: '#F8F9FA',
+                            cardLight: '#FFFFFF',
+                            textDark: '#202124',
+                            textMuted: '#5F6368',
+                            borderLight: '#E0E0E0',
+                            darkBg: '#121212',
+                            darkSurface: '#1E1E1E',
+                            darkBorder: '#333333',
+                            darkText: '#E8EAED',
+                            darkMuted: '#9AA0A6'
                         },
                         cat: {
-                            academics: '#4285F4',
-                            sports: '#34A853',
-                            hobbies: '#FBBC04',
-                            chores: '#EA4335',
-                            work: '#8E24AA',
-                            school: '#00ACC1'
+                            academics: '#1A73E8',
+                            sports: '#1E8E3E',
+                            hobbies: '#A142F4',
+                            chores: '#F9AB00',
+                            work: '#6200EE',
+                            school: '#E52592'
                         }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'Google Sans', 'system-ui', 'sans-serif']
-                    },
-                    boxShadow: {
-                        'google': '0 4px 20px rgba(0, 0, 0, 0.05)',
-                        'google-hover': '0 8px 30px rgba(0, 0, 0, 0.12)',
-                        'modal': '0 20px 40px rgba(0, 0, 0, 0.2)'
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
                     }
                 }
             }
@@ -44,17 +45,16 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            user-select: none;
         }
-        
-        /* Custom scrollbar */
+        /* Custom smooth scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -63,1663 +63,1434 @@
             background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(156, 163, 175, 0.4);
-            border-radius: 9999px;
+            background: rgba(150, 150, 150, 0.3);
+            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(156, 163, 175, 0.7);
+            background: rgba(150, 150, 150, 0.5);
         }
-
-        /* Dragging animations */
         .dragging {
-            opacity: 0.5;
+            opacity: 0.4;
             transform: scale(0.98);
         }
         .drag-over {
             background-color: rgba(26, 115, 232, 0.08) !important;
-            border-color: #1A73E8 !important;
+            border-style: dashed !important;
         }
-
-        /* Glassmorphism */
-        .glass {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
+        .dark .drag-over {
+            background-color: rgba(26, 115, 232, 0.2) !important;
         }
-        .dark .glass {
-            background: rgba(30, 30, 30, 0.85);
-            backdrop-filter: blur(12px);
+        .time-grid-line {
+            border-bottom: 1px dashed rgba(220, 224, 230, 0.6);
         }
-
-        /* Resize Handle Pulse */
-        .resize-handle {
-            cursor: ns-resize;
+        .dark .time-grid-line {
+            border-bottom: 1px dashed rgba(60, 64, 67, 0.6);
         }
-        .resize-handle:hover {
-            background-color: rgba(255, 255, 255, 0.5);
-        }
-
-        /* Transition utility */
-        .smooth-transition {
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        /* SVG Circle timer animation */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
         }
     </style>
 </head>
-<body class="bg-google-bgLight dark:bg-google-bgDark text-gray-800 dark:text-gray-100 min-h-screen flex flex-col antialiased">
+<body class="bg-google-bgLight dark:bg-google-darkBg text-google-textDark dark:text-google-darkText min-h-screen flex flex-col transition-colors duration-200">
 
-    <!-- Top Navigation Bar -->
-    <header class="sticky top-0 z-30 bg-white dark:bg-google-cardDark border-b border-gray-200 dark:border-google-borderDark px-4 py-2.5 shadow-sm smooth-transition">
-        <div class="max-w-[1700px] mx-auto flex flex-wrap items-center justify-between gap-3">
+    <header class="sticky top-0 z-30 bg-white dark:bg-google-darkSurface border-b border-google-borderLight dark:border-google-darkBorder shadow-sm px-4 py-2.5">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
             
-            <!-- Left: Logo & Brand -->
-            <div class="flex items-center space-x-3">
-                <div class="bg-google-blue text-white p-2 rounded-xl shadow-md flex items-center justify-center">
-                    <i data-lucide="calendar-range" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="font-bold text-xl tracking-tight text-gray-900 dark:text-white">FlexSchedule</span>
-                        <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-google-blue font-semibold">Pro</span>
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center space-x-2.5 cursor-pointer" onclick="switchView('daily')">
+                    <div class="w-10 h-10 rounded-xl bg-google-blue flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                        <i class="fa-solid fa-calendar-check text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-google-blue to-purple-600 bg-clip-text text-transparent">FlexSchedule</h1>
+                        <p class="text-xs text-google-textMuted dark:text-google-darkMuted font-medium -mt-1">Dynamic Daily Planner</p>
                     </div>
                 </div>
-            </div>
 
-            <!-- View Switcher Pill -->
-            <nav class="bg-gray-100 dark:bg-gray-800 p-1 rounded-full flex items-center shadow-inner">
-                <button onclick="switchView('daily')" id="tab-daily" class="px-4 py-1.5 rounded-full text-xs font-semibold smooth-transition bg-google-blue text-white shadow-sm">
-                    Daily
-                </button>
-                <button onclick="switchView('weekly')" id="tab-weekly" class="px-4 py-1.5 rounded-full text-xs font-semibold smooth-transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                    Weekly
-                </button>
-                <button onclick="switchView('food')" id="tab-food" class="px-4 py-1.5 rounded-full text-xs font-semibold smooth-transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white flex items-center gap-1.5">
-                    <i data-lucide="utensils" class="w-3.5 h-3.5"></i> Food Tracker
-                </button>
-                <button onclick="switchView('month')" id="tab-month" class="px-4 py-1.5 rounded-full text-xs font-semibold smooth-transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-                    Month at a Glance
-                </button>
-            </nav>
-
-            <!-- Day Selector Strip (Daily & Weekly Views) -->
-            <div id="day-strip" class="hidden md:flex items-center bg-gray-100 dark:bg-gray-800 p-1 rounded-xl gap-1">
-                <button onclick="selectDay(0)" class="day-btn px-2.5 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700">Mon</button>
-                <button onclick="selectDay(1)" class="day-btn px-2.5 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700">Tue</button>
-                <button onclick="selectDay(2)" class="day-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-google-blue text-white shadow-sm">Wed</button>
-                <button onclick="selectDay(3)" class="day-btn px-2.5 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700">Thu</button>
-                <button onclick="selectDay(4)" class="day-btn px-2.5 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700">Fri</button>
-                <button onclick="selectDay(5)" class="day-btn px-2.5 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700">Sat</button>
-                <button onclick="selectDay(6)" class="day-btn px-2.5 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700">Sun</button>
-            </div>
-
-            <!-- Right Utility Cluster -->
-            <div class="flex items-center space-x-2">
-                <!-- Pomodoro Modal Trigger -->
-                <button onclick="openPomodoroModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-100 dark:hover:bg-red-900/50 smooth-transition">
-                    <span class="text-base">🍅</span>
-                    <span>Pomodoro</span>
-                </button>
-
-                <!-- Dark Mode Toggle -->
-                <button onclick="toggleDarkMode()" class="p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 smooth-transition" title="Toggle Dark/Light Mode">
-                    <i data-lucide="moon" id="theme-icon-moon" class="w-4 h-4 hidden dark:block"></i>
-                    <i data-lucide="sun" id="theme-icon-sun" class="w-4 h-4 block dark:hidden"></i>
-                </button>
-
-                <!-- Hour Range & Interval Config -->
-                <button onclick="openSettingsModal()" class="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-800 smooth-transition" title="Grid Hour & Interval Settings">
-                    <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-                    <span class="hidden lg:inline">Hour Range</span>
-                </button>
-
-                <!-- Clear Schedule -->
-                <button onclick="openClearModal()" class="px-3 py-1.5 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 text-xs font-medium smooth-transition">
-                    Clear
-                </button>
-
-                <!-- Backup Export/Import -->
-                <div class="hidden sm:flex items-center space-x-1 border-l border-gray-200 dark:border-gray-700 pl-2">
-                    <button onclick="exportData()" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 smooth-transition" title="Export Schedule & Data">
-                        Export
+                <!-- View Switcher (Pill Segmented Control) -->
+                <div class="bg-gray-100 dark:bg-neutral-800 p-1 rounded-xl flex items-center space-x-1 text-xs font-semibold">
+                    <button id="viewBtn-daily" onclick="switchView('daily')" class="px-3 py-1.5 rounded-lg transition-all text-google-blue bg-white dark:bg-neutral-700 dark:text-white shadow-sm">Daily</button>
+                    <button id="viewBtn-weekly" onclick="switchView('weekly')" class="px-3 py-1.5 rounded-lg transition-all text-google-textMuted dark:text-google-darkMuted hover:text-google-textDark dark:hover:text-white">Weekly</button>
+                    <button id="viewBtn-month" onclick="switchView('month')" class="px-3 py-1.5 rounded-lg transition-all text-google-textMuted dark:text-google-darkMuted hover:text-google-textDark dark:hover:text-white">Month</button>
+                    <button id="viewBtn-food" onclick="switchView('food')" class="px-3 py-1.5 rounded-lg transition-all text-google-textMuted dark:text-google-darkMuted hover:text-google-textDark dark:hover:text-white flex items-center space-x-1">
+                        <i class="fa-solid fa-utensils text-xs"></i>
+                        <span>Food</span>
                     </button>
-                    <button onclick="importDataTrigger()" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 smooth-transition" title="Import Schedule & Data">
-                        Import
-                    </button>
-                    <input type="file" id="import-file-input" class="hidden" accept=".json" onchange="handleImportFile(event)">
                 </div>
+            </div>
+
+            <!-- Day Strip (Mon-Sun) -->
+            <div id="dayStripContainer" class="flex items-center space-x-1 bg-gray-50 dark:bg-neutral-800/60 p-1 rounded-xl overflow-x-auto max-w-full">
+                <!-- Javascript will inject mon-sun day pills here -->
+            </div>
+
+            <!-- Utility Cluster -->
+            <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
+                <!-- Pomodoro Timer Trigger -->
+                <button onclick="openPomodoroModal()" title="Pomodoro Focus Studio" class="flex items-center space-x-1.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 px-3 py-1.5 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/50 text-xs font-semibold transition">
+                    <i class="fa-solid fa-stopwatch animate-pulse"></i>
+                    <span class="hidden sm:inline">Focus Timer</span>
+                </button>
+
+                <!-- Grid Interval & Hours Settings -->
+                <button onclick="openSettingsModal()" title="Time Grid Settings" class="p-2 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-google-textMuted dark:text-google-darkMuted transition">
+                    <i class="fa-solid fa-sliders text-sm"></i>
+                </button>
+
+                <!-- Dark / Light Mode Toggle -->
+                <button id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Theme" class="p-2 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-google-textMuted dark:text-google-darkMuted transition">
+                    <i class="fa-solid fa-moon text-sm dark:hidden"></i>
+                    <i class="fa-solid fa-sun text-sm hidden dark:block text-amber-400"></i>
+                </button>
+
+                <!-- Export / Import JSON -->
+                <div class="relative inline-block text-left">
+                    <button onclick="exportData()" title="Export Backup JSON" class="p-2 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-google-textMuted dark:text-google-darkMuted transition">
+                        <i class="fa-solid fa-download text-sm"></i>
+                    </button>
+                </div>
+                <label title="Import Backup JSON" class="p-2 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-google-textMuted dark:text-google-darkMuted cursor-pointer transition">
+                    <i class="fa-solid fa-upload text-sm"></i>
+                    <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="importData(event)">
+                </label>
+
+                <!-- Reset Data Button -->
+                <button onclick="confirmClearAll()" title="Reset All Data" class="p-2 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-red-100 dark:hover:bg-red-900/40 text-google-textMuted hover:text-red-600 transition">
+                    <i class="fa-solid fa-trash-arrow-up text-sm"></i>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Motivation Banner & Category Bar -->
-    <div class="bg-white dark:bg-google-cardDark/80 border-b border-gray-200/80 dark:border-google-borderDark px-4 py-2 smooth-transition">
-        <div class="max-w-[1700px] mx-auto flex flex-col md:flex-row items-center justify-between gap-2 text-xs">
-            
-            <!-- Motivational Quote -->
-            <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300 overflow-hidden">
-                <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 shrink-0"></i>
-                <span class="font-semibold text-gray-800 dark:text-gray-200 shrink-0">Daily Motivation:</span>
-                <span id="motivation-text" class="italic truncate">"You don't have to be extreme, just consistent." — Anonymous</span>
-                <button onclick="refreshQuote()" class="p-1 text-gray-400 hover:text-google-blue smooth-transition" title="New Quote">
-                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-                </button>
+    <!-- Daily Motivation Banner -->
+    <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 border-b border-google-borderLight dark:border-google-darkBorder px-4 py-2">
+        <div class="max-w-7xl mx-auto flex items-center justify-between text-xs">
+            <div class="flex items-center space-x-2 text-google-textMuted dark:text-google-darkMuted overflow-hidden">
+                <i class="fa-solid fa-quote-left text-google-blue"></i>
+                <span id="quoteText" class="italic truncate font-medium">"Efficiency is doing things right; effectiveness is doing the right things."</span>
+                <span id="quoteAuthor" class="font-semibold text-google-blue"></span>
             </div>
-
-            <!-- Category Filter Chips -->
-            <div class="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none" id="category-filter-chips">
-                <span class="text-gray-400 font-medium mr-1 text-[11px] shrink-0">Filters:</span>
-                <!-- Dynamically populated chips -->
-            </div>
+            <button onclick="refreshQuote()" class="text-google-textMuted hover:text-google-blue dark:hover:text-white ml-2 shrink-0 flex items-center space-x-1">
+                <i class="fa-solid fa-arrows-rotate text-[10px]"></i>
+                <span class="hidden sm:inline">New Quote</span>
+            </button>
         </div>
     </div>
 
-    <!-- Main Content Grid -->
-    <div class="max-w-[1700px] mx-auto w-full flex-1 flex flex-col lg:flex-row p-4 gap-4 overflow-hidden">
-        
-        <!-- LEFT SIDEBAR -->
-        <aside id="sidebar-panel" class="w-full lg:w-80 shrink-0 flex flex-col gap-4 smooth-transition">
-            
-            <!-- CONTENT TYPE A: Saved Activity Library (For Schedule Views) -->
-            <div id="sidebar-activity-library" class="bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl p-4 shadow-google flex flex-col h-full min-h-[500px]">
-                
-                <!-- Header & Add Button -->
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="font-bold text-gray-900 dark:text-white text-base flex items-center gap-2">
-                        <span>Saved Activity Library</span>
-                    </h2>
-                </div>
+    <!-- Main Application Container -->
+    <div class="max-w-7xl mx-auto w-full flex-1 flex flex-col md:flex-row p-3 md:p-5 gap-5 overflow-hidden">
 
-                <button onclick="openNewActivityModal()" class="w-full py-2.5 px-4 bg-google-blue hover:bg-google-hoverBlue text-white font-medium text-xs rounded-xl shadow-md hover:shadow-lg smooth-transition flex items-center justify-center gap-2 mb-3">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    <span>+ New Saved Activity</span>
-                </button>
-
-                <!-- Search Input -->
-                <div class="relative mb-3">
-                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-2.5 text-gray-400"></i>
-                    <input type="text" id="library-search" oninput="filterLibrary()" placeholder="Search activities..." class="w-full pl-9 pr-3 py-1.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-google-blue/50 text-gray-800 dark:text-gray-100">
-                </div>
-
-                <!-- Library Filter Chips -->
-                <div class="flex items-center gap-1 overflow-x-auto pb-2 mb-2 border-b border-gray-100 dark:border-gray-800 text-[11px]" id="library-category-filters">
-                    <!-- Populated dynamically -->
-                </div>
-
-                <!-- Draggable Activity List -->
-                <div id="library-activity-list" class="flex-1 overflow-y-auto space-y-2 pr-1">
-                    <!-- Activity Cards rendered dynamically -->
-                </div>
-
-                <div class="pt-3 border-t border-gray-100 dark:border-gray-800 mt-2 flex justify-between items-center text-xs text-gray-500">
-                    <span class="text-[11px]">💡 Drag cards to schedule grid</span>
-                    <button onclick="openCategoryManager()" class="text-google-blue hover:underline text-[11px] font-medium">Manage Categories</button>
-                </div>
+        <!-- LEFT SIDEBAR PANEL -->
+        <aside id="leftSidebar" class="w-full md:w-80 shrink-0 flex flex-col gap-4">
+            <!-- Sidebar Header & Toggle for View Types -->
+            <div id="sidebarContent" class="bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-2xl p-4 shadow-sm flex flex-col h-full">
+                <!-- Content injected dynamically based on view (Saved Activity Library vs Food Goals) -->
             </div>
-
-            <!-- CONTENT TYPE B: Daily Nutrition Goals (Visible in Food Tracker View) -->
-            <div id="sidebar-nutrition-goals" class="hidden bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl p-4 shadow-google flex flex-col gap-4">
-                <h2 class="font-bold text-gray-900 dark:text-white text-base flex items-center gap-2">
-                    <i data-lucide="target" class="w-5 h-5 text-google-blue"></i>
-                    <span>Daily Nutrition Goals</span>
-                </h2>
-
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Calories Goal (kcal)</label>
-                        <input type="number" id="goal-calories" value="2000" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Protein Goal (g)</label>
-                        <input type="number" id="goal-protein" value="150" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Carbs Goal (g)</label>
-                        <input type="number" id="goal-carbs" value="220" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Fat Goal (g)</label>
-                        <input type="number" id="goal-fat" value="65" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold">
-                    </div>
-
-                    <button onclick="updateNutritionGoals()" class="w-full py-2 bg-google-blue hover:bg-google-hoverBlue text-white font-semibold text-xs rounded-xl shadow smooth-transition">
-                        Update Goals
-                    </button>
-                </div>
-            </div>
-
         </aside>
 
-        <!-- MAIN CANVAS WORKSPACE -->
-        <main class="flex-1 flex flex-col gap-4 overflow-hidden min-w-0">
+        <!-- MAIN SCHEDULE CANVAS AREA -->
+        <main class="flex-1 flex flex-col min-w-0 bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-2xl shadow-sm overflow-hidden">
             
-            <!-- VIEW 1: DAILY VIEW -->
-            <section id="view-daily" class="flex-1 flex flex-col gap-4 overflow-hidden">
-                
-                <!-- Daily Progress Bar Card -->
-                <div class="bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl p-4 shadow-google flex flex-col sm:flex-row items-center justify-between gap-4">
-                    
-                    <div class="flex items-center gap-4 w-full sm:w-auto">
-                        <!-- SVG Circular Progress Indicator -->
-                        <div class="relative w-14 h-14 shrink-0 flex items-center justify-center">
-                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                                <path class="text-gray-200 dark:text-gray-700" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <path id="progress-circle-stroke" class="text-google-blue smooth-transition" stroke-dasharray="0, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            </svg>
-                            <span id="progress-percent-text" class="absolute text-xs font-bold text-gray-800 dark:text-gray-100">0%</span>
-                        </div>
-
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h3 class="font-bold text-gray-900 dark:text-white text-base">Daily Progress</h3>
-                                <span id="progress-count-badge" class="px-2.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-semibold">0 / 0 completed</span>
-                            </div>
-                            <p id="progress-subtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Drag activities from the sidebar to plan your day!</p>
-                        </div>
+            <!-- Progress Bar Header (Visible in Daily View) -->
+            <div id="dailyProgressHeader" class="p-4 border-b border-google-borderLight dark:border-google-darkBorder bg-gray-50/50 dark:bg-neutral-800/30 flex flex-col space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span id="currentDateDisplay" class="font-bold text-lg">Today</span>
+                        <span id="progressCountBadge" class="text-xs bg-blue-100 dark:bg-blue-900/50 text-google-blue dark:text-blue-300 px-2.5 py-0.5 rounded-full font-semibold">0/0 completed</span>
                     </div>
+                    <span id="progressPercentBadge" class="text-sm font-bold text-google-blue">0%</span>
+                </div>
+                <div class="w-full bg-gray-200 dark:bg-neutral-700 rounded-full h-2 overflow-hidden">
+                    <div id="dailyProgressBar" class="bg-google-blue h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
 
-                    <!-- Progress Bar & Call to Action -->
-                    <div class="w-full sm:w-1/2 flex flex-col gap-2">
-                        <div class="w-full bg-gray-100 dark:bg-gray-800 h-3 rounded-full overflow-hidden p-0.5 border border-gray-200 dark:border-gray-700">
-                            <div id="progress-bar-fill" class="bg-google-blue h-full rounded-full smooth-transition w-0"></div>
+            <!-- VIEW CANVASES -->
+            <div class="flex-1 overflow-y-auto p-4 relative" id="canvasScrollArea">
+                
+                <!-- DAILY SCHEDULE VIEW -->
+                <div id="view-daily" class="flex flex-col h-full">
+                    <!-- Dynamic Time Slots Container -->
+                    <div id="dailyTimeGrid" class="flex flex-col divide-y divide-gray-100 dark:divide-neutral-800 relative">
+                        <!-- Dynamic time rows injected via JS -->
+                    </div>
+                </div>
+
+                <!-- WEEKLY SCHEDULE VIEW -->
+                <div id="view-weekly" class="hidden flex-col h-full overflow-x-auto">
+                    <div class="min-w-[700px] flex flex-col">
+                        <!-- Days Header -->
+                        <div id="weeklyHeaderRow" class="grid grid-cols-8 border-b border-google-borderLight dark:border-google-darkBorder pb-2 text-center text-xs font-bold text-google-textMuted dark:text-google-darkMuted sticky top-0 bg-white dark:bg-google-darkSurface z-10">
+                            <div>Time</div>
+                            <div>Mon</div>
+                            <div>Tue</div>
+                            <div>Wed</div>
+                            <div>Thu</div>
+                            <div>Fri</div>
+                            <div>Sat</div>
+                            <div>Sun</div>
                         </div>
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="text-gray-400 font-medium">0%</span>
-                            <span id="progress-cta" class="text-google-blue font-bold flex items-center gap-1">
-                                🚀 Get started!
-                            </span>
-                            <span class="text-gray-400 font-medium">100%</span>
+                        <!-- Weekly Grid Rows -->
+                        <div id="weeklyTimeGrid" class="flex flex-col divide-y divide-gray-100 dark:divide-neutral-800">
+                            <!-- Injected via JS -->
                         </div>
                     </div>
                 </div>
 
-                <!-- Interactive Time Grid Canvas -->
-                <div class="flex-1 bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl shadow-google overflow-y-auto relative p-4" id="grid-scroll-container">
-                    
-                    <div class="flex w-full relative min-h-[600px]" id="daily-grid-wrapper">
-                        
-                        <!-- Left Time Labels Column -->
-                        <div id="grid-time-labels" class="w-16 md:w-20 shrink-0 flex flex-col text-right pr-3 select-none text-xs font-medium text-gray-400 dark:text-gray-500">
-                            <!-- Time steps populated dynamically based on custom intervals -->
+                <!-- MONTH VIEW -->
+                <div id="view-month" class="hidden flex-col h-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 id="monthTitle" class="text-lg font-bold">Month View</h2>
+                        <div class="flex space-x-1">
+                            <button onclick="changeMonth(-1)" class="p-1.5 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                            <button onclick="changeMonth(1)" class="p-1.5 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200"><i class="fa-solid fa-chevron-right text-xs"></i></button>
                         </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-google-textMuted dark:text-google-darkMuted mb-2">
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                    </div>
+                    <div id="monthGrid" class="grid grid-cols-7 gap-1 flex-1">
+                        <!-- Dynamic month cells injected via JS -->
+                    </div>
+                </div>
 
-                        <!-- Right Schedule Column / Drop Zone Container -->
-                        <div id="daily-schedule-canvas" class="flex-1 relative border-l border-gray-200 dark:border-gray-800 bg-slate-50/50 dark:bg-gray-900/30 rounded-r-xl"
-                             ondragover="handleDragOver(event)"
-                             ondragleave="handleDragLeave(event)"
-                             ondrop="handleDrop(event)">
+                <!-- FOOD TRACKER VIEW -->
+                <div id="view-food" class="hidden flex-col space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        
+                        <!-- Calorie Summary Ring Card -->
+                        <div class="bg-gray-50 dark:bg-neutral-800/50 p-5 rounded-2xl border border-google-borderLight dark:border-google-darkBorder flex flex-col items-center justify-center relative">
+                            <h3 class="text-sm font-bold text-google-textMuted dark:text-google-darkMuted mb-2 uppercase tracking-wider">Calories Remaining</h3>
                             
-                            <!-- Horizontal Time Grid Overlay Lines -->
-                            <div id="grid-lines-layer" class="absolute inset-0 pointer-events-none">
-                                <!-- Horizontal line items -->
-                            </div>
-
-                            <!-- Scheduled Blocks Layer -->
-                            <div id="scheduled-blocks-layer" class="absolute inset-0 z-10">
-                                <!-- Dropped Blocks Rendered Here -->
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-
-            </section>
-
-            <!-- VIEW 2: WEEKLY VIEW -->
-            <section id="view-weekly" class="hidden flex-1 flex flex-col bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl shadow-google overflow-hidden p-4">
-                <div class="flex justify-between items-center mb-3">
-                    <h2 class="font-bold text-gray-900 dark:text-white text-base">Weekly Overview</h2>
-                    <span class="text-xs text-gray-500">Drag & drop activities onto any day column</span>
-                </div>
-                
-                <div class="flex-1 overflow-x-auto overflow-y-auto">
-                    <div id="weekly-grid-container" class="grid grid-cols-7 gap-2 min-w-[800px] h-full">
-                        <!-- 7 Column Day Cards -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- VIEW 3: FOOD TRACKER VIEW -->
-            <section id="view-food" class="hidden flex-1 flex flex-col gap-4 overflow-y-auto pr-1">
-                
-                <!-- Nutrition Overview Top Row -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    
-                    <!-- Circular Calorie Gauge Card -->
-                    <div class="bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl p-5 shadow-google flex flex-col items-center justify-center text-center">
-                        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Calories Consumed</h3>
-                        
-                        <div class="relative w-36 h-36 my-2">
-                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                                <path class="text-gray-100 dark:text-gray-800" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <path id="calorie-gauge-stroke" class="text-google-blue smooth-transition" stroke-dasharray="0, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            </svg>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <span id="food-consumed-cal" class="text-2xl font-black text-gray-900 dark:text-white">0</span>
-                                <span class="text-[10px] text-gray-400 font-medium">/ <span id="food-goal-cal">2000</span> kcal</span>
-                            </div>
-                        </div>
-
-                        <span id="food-remaining-badge" class="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-google-blue font-bold text-xs rounded-full mt-2">
-                            2000 kcal remaining
-                        </span>
-                    </div>
-
-                    <!-- Macro Progress Meters Card -->
-                    <div class="bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl p-5 shadow-google flex flex-col justify-center space-y-4">
-                        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Macronutrients Breakdown</h3>
-                        
-                        <!-- Protein -->
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold mb-1">
-                                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Protein</span>
-                                <span class="text-gray-500"><span id="macro-p-val">0</span> / <span id="macro-p-goal">150</span>g</span>
-                            </div>
-                            <div class="w-full bg-gray-100 dark:bg-gray-800 h-2.5 rounded-full overflow-hidden">
-                                <div id="macro-p-bar" class="bg-blue-500 h-full w-0 smooth-transition"></div>
-                            </div>
-                        </div>
-
-                        <!-- Carbs -->
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold mb-1">
-                                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Carbs</span>
-                                <span class="text-gray-500"><span id="macro-c-val">0</span> / <span id="macro-c-goal">220</span>g</span>
-                            </div>
-                            <div class="w-full bg-gray-100 dark:bg-gray-800 h-2.5 rounded-full overflow-hidden">
-                                <div id="macro-c-bar" class="bg-amber-500 h-full w-0 smooth-transition"></div>
-                            </div>
-                        </div>
-
-                        <!-- Fat -->
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold mb-1">
-                                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Fat</span>
-                                <span class="text-gray-500"><span id="macro-f-val">0</span> / <span id="macro-f-goal">65</span>g</span>
-                            </div>
-                            <div class="w-full bg-gray-100 dark:bg-gray-800 h-2.5 rounded-full overflow-hidden">
-                                <div id="macro-f-bar" class="bg-rose-500 h-full w-0 smooth-transition"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Log Meal Card & Today's Weight Card -->
-                    <div class="flex flex-col gap-4">
-                        <!-- Weight Logger -->
-                        <div class="bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl p-4 shadow-google flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 rounded-xl">
-                                    <i data-lucide="scale" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-xs font-bold text-gray-900 dark:text-white">Today's Weight</h4>
-                                    <p class="text-[11px] text-gray-400">Track weight progress</p>
+                            <!-- Circular SVG Progress Ring -->
+                            <div class="relative w-40 h-40 flex items-center justify-center my-2">
+                                <svg class="w-full h-full" viewBox="0 0 100 100">
+                                    <circle class="text-gray-200 dark:text-neutral-700" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
+                                    <circle id="calorieRing" class="text-google-blue progress-ring__circle" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
+                                </svg>
+                                <div class="absolute flex flex-col items-center text-center">
+                                    <span id="foodCalRemaining" class="text-2xl font-extrabold">2000</span>
+                                    <span class="text-[10px] text-google-textMuted dark:text-google-darkMuted font-medium">kcal left</span>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <input type="number" id="weight-input" step="0.1" placeholder="70" class="w-20 px-2.5 py-1.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs font-bold text-center">
-                                <span class="text-xs text-gray-500 font-semibold">kg</span>
-                                <button onclick="saveWeightLog()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold smooth-transition">Log</button>
-                            </div>
-                        </div>
 
-                        <!-- Weekly Summary Card -->
-                        <div class="flex-1 bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl p-4 shadow-google flex flex-col justify-between">
-                            <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Weekly Goals Summary</h4>
-                            <div class="grid grid-cols-3 gap-2 my-2 text-center">
-                                <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                                    <div class="text-[10px] text-gray-400">Avg Cals</div>
-                                    <div class="text-sm font-bold text-gray-800 dark:text-gray-100" id="weekly-avg-cal">1850</div>
+                            <div class="flex justify-between w-full text-xs font-semibold pt-2 border-t border-gray-200 dark:border-neutral-700">
+                                <div class="text-center">
+                                    <div class="text-google-textMuted dark:text-google-darkMuted text-[10px]">Consumed</div>
+                                    <div id="foodCalEaten" class="text-google-blue font-bold">0 kcal</div>
                                 </div>
-                                <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                                    <div class="text-[10px] text-gray-400">Avg Protein</div>
-                                    <div class="text-sm font-bold text-gray-800 dark:text-gray-100" id="weekly-avg-protein">142g</div>
-                                </div>
-                                <div class="p-2 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                                    <div class="text-[10px] text-gray-400">Streak</div>
-                                    <div class="text-sm font-bold text-amber-500">5 Days 🔥</div>
+                                <div class="text-center">
+                                    <div class="text-google-textMuted dark:text-google-darkMuted text-[10px]">Target</div>
+                                    <div id="foodCalTarget" class="font-bold">2000 kcal</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                </div>
-
-                <!-- Meal Logger & Today's Meals List -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    
-                    <!-- Log Meal Form -->
-                    <div class="bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl p-5 shadow-google">
-                        <h3 class="font-bold text-gray-900 dark:text-white text-sm mb-3 flex items-center gap-2">
-                            <i data-lucide="plus-circle" class="w-4 h-4 text-google-blue"></i> Log a Meal
-                        </h3>
-                        <form onsubmit="handleAddMeal(event)" class="space-y-3">
+                        <!-- Macro Breakdown Card -->
+                        <div class="bg-gray-50 dark:bg-neutral-800/50 p-5 rounded-2xl border border-google-borderLight dark:border-google-darkBorder flex flex-col justify-between space-y-3">
+                            <h3 class="text-sm font-bold text-google-textMuted dark:text-google-darkMuted uppercase tracking-wider">Macros Today</h3>
+                            
+                            <!-- Protein Bar -->
                             <div>
-                                <label class="block text-[11px] font-semibold text-gray-500 mb-1">Meal Name</label>
-                                <input type="text" id="meal-name" required placeholder="e.g. Chicken Salad & Rice" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs">
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">Calories (kcal)</label>
-                                    <input type="number" id="meal-cal" required min="0" placeholder="450" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs">
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-drumstick-bite mr-1"></i> Protein</span>
+                                    <span id="proteinStat">0 / 150g</span>
                                 </div>
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">Protein (g)</label>
-                                    <input type="number" id="meal-protein" min="0" placeholder="35" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs">
+                                <div class="w-full bg-gray-200 dark:bg-neutral-700 h-2.5 rounded-full overflow-hidden">
+                                    <div id="proteinBar" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">Carbs (g)</label>
-                                    <input type="number" id="meal-carbs" min="0" placeholder="40" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs">
+
+                            <!-- Carbs Bar -->
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-amber-600 dark:text-amber-400"><i class="fa-solid fa-wheat-awn mr-1"></i> Carbs</span>
+                                    <span id="carbsStat">0 / 220g</span>
                                 </div>
-                                <div>
-                                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">Fat (g)</label>
-                                    <input type="number" id="meal-fat" min="0" placeholder="12" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs">
+                                <div class="w-full bg-gray-200 dark:bg-neutral-700 h-2.5 rounded-full overflow-hidden">
+                                    <div id="carbsBar" class="bg-amber-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
                                 </div>
                             </div>
-                            <button type="submit" class="w-full py-2.5 bg-google-blue hover:bg-google-hoverBlue text-white font-semibold text-xs rounded-xl shadow smooth-transition">
-                                + Add Meal
-                            </button>
-                        </form>
+
+                            <!-- Fat Bar -->
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-rose-600 dark:text-rose-400"><i class="fa-solid fa-cheese mr-1"></i> Fat</span>
+                                    <span id="fatStat">0 / 65g</span>
+                                </div>
+                                <div class="w-full bg-gray-200 dark:bg-neutral-700 h-2.5 rounded-full overflow-hidden">
+                                    <div id="fatBar" class="bg-rose-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Log Meal Form Card -->
+                        <div class="bg-gray-50 dark:bg-neutral-800/50 p-5 rounded-2xl border border-google-borderLight dark:border-google-darkBorder flex flex-col justify-between">
+                            <h3 class="text-sm font-bold text-google-textMuted dark:text-google-darkMuted uppercase tracking-wider mb-2">Log a Meal</h3>
+                            <form onsubmit="handleLogMeal(event)" class="space-y-2.5">
+                                <input type="text" id="mealNameInput" placeholder="Meal Name (e.g., Grilled Chicken Salad)" required class="w-full px-3 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="number" id="mealCalInput" placeholder="Calories (kcal)" required min="0" class="px-3 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
+                                    <input type="number" id="mealProteinInput" placeholder="Protein (g)" min="0" class="px-3 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="number" id="mealCarbsInput" placeholder="Carbs (g)" min="0" class="px-3 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
+                                    <input type="number" id="mealFatInput" placeholder="Fat (g)" min="0" class="px-3 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
+                                </div>
+                                <button type="submit" class="w-full bg-google-blue hover:bg-google-hoverBlue text-white font-bold py-2 rounded-xl text-xs shadow transition flex items-center justify-center space-x-1">
+                                    <i class="fa-solid fa-plus text-xs"></i>
+                                    <span>Add Meal</span>
+                                </button>
+                            </form>
+                        </div>
+
                     </div>
 
-                    <!-- Today's Meals List -->
-                    <div class="lg:col-span-2 bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl p-5 shadow-google flex flex-col">
-                        <h3 class="font-bold text-gray-900 dark:text-white text-sm mb-3">Today's Meals</h3>
-                        <div id="meals-list-container" class="flex-1 overflow-y-auto space-y-2 max-h-[300px] pr-1">
-                            <!-- Populated dynamically -->
+                    <!-- Today's Logged Meals List -->
+                    <div class="bg-gray-50 dark:bg-neutral-800/30 rounded-2xl border border-google-borderLight dark:border-google-darkBorder p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base font-bold flex items-center space-x-2">
+                                <i class="fa-solid fa-utensils text-google-blue"></i>
+                                <span>Today's Logged Meals</span>
+                            </h3>
+                            <span id="mealCountBadge" class="text-xs bg-gray-200 dark:bg-neutral-700 px-2.5 py-1 rounded-full font-semibold">0 logged</span>
+                        </div>
+                        <div id="loggedMealsList" class="space-y-2">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Weight Logger & Weekly Goals Summary -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="bg-gray-50 dark:bg-neutral-800/30 rounded-2xl border border-google-borderLight dark:border-google-darkBorder p-4 flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-xs uppercase text-google-textMuted dark:text-google-darkMuted">Today's Weight</h4>
+                                <p class="text-xs text-gray-500">Track your daily morning weight check-in</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" id="weightInput" step="0.1" placeholder="70.5" class="w-20 px-2.5 py-1.5 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-center font-bold">
+                                <span class="text-xs font-semibold">kg</span>
+                                <button onclick="saveWeightLog()" class="bg-google-blue text-white px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-google-hoverBlue">Save</button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-neutral-800/30 rounded-2xl border border-google-borderLight dark:border-google-darkBorder p-4 flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-xs uppercase text-google-textMuted dark:text-google-darkMuted">Weekly Nutrition Target</h4>
+                                <p id="weeklyCalorieSummary" class="text-xs text-gray-500">0 / 14,000 total weekly kcal consumed</p>
+                            </div>
+                            <i class="fa-solid fa-chart-line text-2xl text-google-blue opacity-80"></i>
                         </div>
                     </div>
 
                 </div>
 
-            </section>
-
-            <!-- VIEW 4: MONTH AT A GLANCE VIEW -->
-            <section id="view-month" class="hidden flex-1 flex flex-col bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark rounded-2xl shadow-google p-4">
-                <div class="flex justify-between items-center mb-3">
-                    <h2 class="font-bold text-gray-900 dark:text-white text-base">Month at a Glance</h2>
-                    <span class="text-xs text-gray-500">Click any date cell to open that day's schedule</span>
-                </div>
-                
-                <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-gray-400 py-2 border-b border-gray-100 dark:border-gray-800">
-                    <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
-                </div>
-
-                <div id="month-grid" class="flex-1 grid grid-cols-7 grid-rows-5 gap-1.5 pt-2">
-                    <!-- 35 Day Cells Populated Dynamically -->
-                </div>
-            </section>
-
+            </div>
         </main>
     </div>
 
-    <!-- MODAL 1: POMODORO FOCUS STUDIO -->
-    <div id="pomodoro-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm smooth-transition">
-        <div class="bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark w-full max-w-md rounded-3xl p-6 shadow-modal relative animate-in fade-in zoom-in-95 duration-200">
-            
-            <button onclick="closePomodoroModal()" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded-full">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-
-            <div class="text-center mb-6">
-                <div class="inline-flex p-3 bg-red-50 dark:bg-red-950/50 rounded-2xl mb-2 text-2xl">
-                    🍅
-                </div>
-                <h3 class="font-bold text-xl text-gray-900 dark:text-white">Pomodoro Focus Studio</h3>
-                <p class="text-xs text-gray-500 mt-1">Ready for deep focus session</p>
+    <!-- MODAL 1: CREATE / EDIT SAVED ACTIVITY -->
+    <div id="activityModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-100 dark:border-neutral-800 pb-3">
+                <h3 id="activityModalTitle" class="text-base font-bold">New Saved Activity</h3>
+                <button onclick="closeModal('activityModal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-
-            <!-- Timer Circle -->
-            <div class="relative w-48 h-48 mx-auto mb-6 flex items-center justify-center">
-                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                    <path class="text-gray-100 dark:text-gray-800" stroke-width="2.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    <path id="pomo-circle-stroke" class="text-google-blue smooth-transition" stroke-dasharray="100, 100" stroke-width="3" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                </svg>
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                    <span id="pomo-timer-display" class="text-4xl font-extrabold text-google-blue tracking-tight">25:00</span>
-                    <span id="pomo-status-text" class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Focus Mode</span>
-                </div>
-            </div>
-
-            <!-- Custom Durations & Quick Presets -->
-            <div class="grid grid-cols-2 gap-3 mb-6">
+            <form onsubmit="handleSaveActivity(event)" class="space-y-3">
+                <input type="hidden" id="editActivityId">
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">Work (min)</label>
-                    <input type="number" id="pomo-work-input" value="25" min="1" max="120" class="w-full px-3 py-1.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs text-center font-bold">
+                    <label class="block text-xs font-semibold mb-1">Activity Name</label>
+                    <input type="text" id="actNameInput" required placeholder="e.g. Calculus Practice" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Category</label>
+                        <select id="actCategoryInput" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
+                            <option value="Academics">Academics</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Hobbies">Hobbies</option>
+                            <option value="Chores">Chores</option>
+                            <option value="Work">Work</option>
+                            <option value="School">School</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Duration (Mins)</label>
+                        <input type="number" id="actDurationInput" required min="15" step="15" value="45" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">Break (min)</label>
-                    <input type="number" id="pomo-break-input" value="5" min="1" max="60" class="w-full px-3 py-1.5 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs text-center font-bold">
+                    <label class="block text-xs font-semibold mb-1">Icon (FontAwesome class or emoji)</label>
+                    <input type="text" id="actIconInput" placeholder="fa-book or 📚" value="fa-book" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-google-blue">
                 </div>
-            </div>
-
-            <div class="flex items-center justify-center gap-2 mb-6">
-                <button onclick="setPomoPreset(25, 5)" class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-xs rounded-lg font-medium">25/5</button>
-                <button onclick="setPomoPreset(50, 10)" class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-xs rounded-lg font-medium">50/10</button>
-                <button onclick="setPomoPreset(15, 3)" class="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-xs rounded-lg font-medium">15/3</button>
-            </div>
-
-            <!-- Action Controls -->
-            <div class="flex items-center gap-3">
-                <button onclick="togglePomoTimer()" id="pomo-start-btn" class="flex-1 py-3 bg-google-blue hover:bg-google-hoverBlue text-white font-bold text-sm rounded-2xl shadow-md smooth-transition">
-                    Start Timer
-                </button>
-                <button onclick="resetPomoTimer()" class="px-4 py-3 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 font-semibold text-xs rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 smooth-transition">
-                    Reset
-                </button>
-            </div>
+                <div class="flex justify-end space-x-2 pt-3 border-t border-gray-100 dark:border-neutral-800">
+                    <button type="button" onclick="closeModal('activityModal')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200">Cancel</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-bold bg-google-blue hover:bg-google-hoverBlue text-white">Save Activity</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- MODAL 2: HOUR RANGE & INTERVAL STEP CUSTOMIZATION SETTINGS -->
-    <div id="settings-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-        <div class="bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark w-full max-w-md rounded-3xl p-6 shadow-modal">
-            
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
-                    <i data-lucide="sliders" class="w-5 h-5 text-google-blue"></i>
-                    <span>Grid & Schedule Settings</span>
+    <!-- MODAL 2: TIME GRID SETTINGS -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-100 dark:border-neutral-800 pb-3">
+                <h3 class="text-base font-bold flex items-center space-x-2">
+                    <i class="fa-solid fa-sliders text-google-blue"></i>
+                    <span>Schedule Grid Settings</span>
                 </h3>
-                <button onclick="closeSettingsModal()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeModal('settingsModal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-
-            <p class="text-xs text-gray-500 mb-4">Customize day start/end hours and dynamic time interval steps (e.g. 45-minute blocks for 7:00, 7:45, 8:30).</p>
-
-            <div class="space-y-4">
-                <!-- Start & End Time -->
+            <form onsubmit="handleSaveSettings(event)" class="space-y-4">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Start Hour</label>
-                        <select id="settings-start-hour" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs font-semibold">
-                            <!-- Populated via JS -->
+                        <label class="block text-xs font-semibold mb-1">Start Hour</label>
+                        <select id="settingStartHour" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
+                            <option value="5">5:00 AM</option>
+                            <option value="6">6:00 AM</option>
+                            <option value="7" selected>7:00 AM</option>
+                            <option value="8">8:00 AM</option>
+                            <option value="9">9:00 AM</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">End Hour</label>
-                        <select id="settings-end-hour" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs font-semibold">
-                            <!-- Populated via JS -->
+                        <label class="block text-xs font-semibold mb-1">End Hour</label>
+                        <select id="settingEndHour" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
+                            <option value="18">6:00 PM</option>
+                            <option value="19">7:00 PM</option>
+                            <option value="20" selected>8:00 PM</option>
+                            <option value="21">9:00 PM</option>
+                            <option value="22">10:00 PM</option>
+                            <option value="23">11:00 PM</option>
                         </select>
                     </div>
                 </div>
-
-                <!-- Interval Step Options -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Time Interval Step (Minutes)</label>
-                    <select id="settings-interval-step" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs font-semibold">
-                        <option value="15">15 Minutes (7:00, 7:15, 7:30...)</option>
-                        <option value="30">30 Minutes (7:00, 7:30, 8:00...)</option>
-                        <option value="45" selected>45 Minutes (7:00, 7:45, 8:30...)</option>
-                        <option value="60">60 Minutes (7:00, 8:00, 9:00...)</option>
+                    <label class="block text-xs font-semibold mb-1">Slot Duration Interval</label>
+                    <select id="settingSlotInterval" class="w-full px-3 py-2 text-xs rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
+                        <option value="15">15 Minutes</option>
+                        <option value="30" selected>30 Minutes</option>
+                        <option value="45">45 Minutes</option>
+                        <option value="60">60 Minutes</option>
                     </select>
+                    <p class="text-[11px] text-google-textMuted dark:text-google-darkMuted mt-1">E.g., 45 min interval generates slots like 7:00, 7:45, 8:30, 9:15...</p>
                 </div>
-
-                <div class="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-xl text-[11px] text-google-blue">
-                    ✨ Selecting 45m splits the schedule effortlessly into 45-minute blocks!
-                </div>
-
-                <div class="flex justify-end gap-2 pt-2">
-                    <button onclick="closeSettingsModal()" class="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold">Cancel</button>
-                    <button onclick="saveSettings()" class="px-4 py-2 bg-google-blue hover:bg-google-hoverBlue text-white rounded-xl text-xs font-semibold">Save Settings</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- MODAL 3: + NEW / EDIT SAVED ACTIVITY MODAL -->
-    <div id="activity-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-        <div class="bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark w-full max-w-md rounded-3xl p-6 shadow-modal">
-            
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="activity-modal-title" class="font-bold text-lg text-gray-900 dark:text-white">New Saved Activity</h3>
-                <button onclick="closeActivityModal()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-
-            <form onsubmit="handleSaveActivity(event)" class="space-y-4">
-                <input type="hidden" id="act-edit-id" value="">
-                
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Activity Name</label>
-                    <input type="text" id="act-name" required placeholder="e.g. Physics Lecture" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Category</label>
-                        <select id="act-category" onchange="syncCategoryColor()" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs font-semibold">
-                            <!-- Dynamic Categories -->
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Color Accent</label>
-                        <input type="color" id="act-color" value="#00ACC1" class="w-full h-9 p-1 border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent cursor-pointer">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Default Duration (Minutes)</label>
-                    <input type="number" id="act-duration" min="15" step="15" value="60" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Notes (Optional)</label>
-                    <textarea id="act-notes" rows="2" placeholder="Add room number or checklist..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs"></textarea>
-                </div>
-
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeActivityModal()" class="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-google-blue hover:bg-google-hoverBlue text-white rounded-xl text-xs font-semibold">Save Activity</button>
+                <div class="flex justify-end space-x-2 pt-3 border-t border-gray-100 dark:border-neutral-800">
+                    <button type="button" onclick="closeModal('settingsModal')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200">Cancel</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-bold bg-google-blue hover:bg-google-hoverBlue text-white">Apply Settings</button>
                 </div>
             </form>
-
         </div>
     </div>
 
-    <!-- MODAL 4: SCHEDULED BLOCK EDIT MODAL -->
-    <div id="block-edit-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-        <div class="bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark w-full max-w-md rounded-3xl p-6 shadow-modal">
-            
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-lg text-gray-900 dark:text-white">Edit Schedule Item</h3>
-                <button onclick="closeBlockEditModal()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+    <!-- MODAL 3: POMODORO FOCUS STUDIO -->
+    <div id="pomodoroModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-3xl shadow-2xl w-full max-w-sm p-6 flex flex-col items-center text-center space-y-5">
+            <div class="flex justify-between items-center w-full">
+                <span class="text-xs uppercase font-bold tracking-widest text-red-500 flex items-center space-x-1">
+                    <i class="fa-solid fa-fire"></i>
+                    <span>Focus Studio</span>
+                </span>
+                <button onclick="closeModal('pomodoroModal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
 
-            <form onsubmit="handleSaveBlockEdit(event)" class="space-y-4">
-                <input type="hidden" id="block-edit-id" value="">
-                
+            <!-- Big Digital Countdown Timer -->
+            <div class="relative w-48 h-48 flex items-center justify-center">
+                <svg class="w-full h-full" viewBox="0 0 100 100">
+                    <circle class="text-gray-200 dark:text-neutral-800" stroke-width="6" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50"/>
+                    <circle id="pomoRing" class="text-red-500 progress-ring__circle" stroke-width="6" stroke-dasharray="263.89" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50"/>
+                </svg>
+                <div class="absolute flex flex-col items-center">
+                    <span id="pomoDisplay" class="text-4xl font-black tracking-tight">25:00</span>
+                    <span id="pomoStatusText" class="text-xs font-semibold text-google-textMuted dark:text-google-darkMuted mt-1">Ready to Focus</span>
+                </div>
+            </div>
+
+            <!-- Custom Timer Inputs -->
+            <div class="grid grid-cols-2 gap-3 w-full text-left">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Item Title</label>
-                    <input type="text" id="block-edit-title" required class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs font-bold">
+                    <label class="block text-[10px] font-bold uppercase text-google-textMuted dark:text-google-darkMuted mb-1">Work (min)</label>
+                    <input type="number" id="pomoWorkInput" value="25" min="1" max="120" class="w-full px-3 py-1.5 text-xs text-center rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 font-bold">
                 </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Start Time (Min from midnight)</label>
-                        <select id="block-edit-start" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs">
-                            <!-- Populated dynamically -->
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Duration (Mins)</label>
-                        <input type="number" id="block-edit-duration" min="15" step="15" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl text-xs font-bold">
-                    </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-google-textMuted dark:text-google-darkMuted mb-1">Break (min)</label>
+                    <input type="number" id="pomoBreakInput" value="5" min="1" max="60" class="w-full px-3 py-1.5 text-xs text-center rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 font-bold">
                 </div>
-
-                <div class="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                    <input type="checkbox" id="block-edit-completed" class="w-4 h-4 text-google-blue rounded">
-                    <label for="block-edit-completed" class="text-xs font-semibold text-gray-700 dark:text-gray-300">Mark as Completed</label>
-                </div>
-
-                <div class="flex justify-between items-center pt-2">
-                    <button type="button" onclick="deleteBlockItem()" class="px-3 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl text-xs font-semibold">Delete</button>
-                    <div class="flex gap-2">
-                        <button type="button" onclick="closeBlockEditModal()" class="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-google-blue hover:bg-google-hoverBlue text-white rounded-xl text-xs font-semibold">Save Changes</button>
-                    </div>
-                </div>
-            </form>
-
-        </div>
-    </div>
-
-    <!-- MODAL 5: CLEAR CONFIRMATION MODAL -->
-    <div id="clear-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-        <div class="bg-white dark:bg-google-cardDark border border-gray-200 dark:border-google-borderDark w-full max-w-sm rounded-3xl p-6 shadow-modal text-center">
-            <div class="w-12 h-12 bg-red-100 dark:bg-red-900/40 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                <i data-lucide="alert-triangle" class="w-6 h-6"></i>
             </div>
-            <h3 class="font-bold text-base text-gray-900 dark:text-white mb-1">Clear Schedule?</h3>
-            <p class="text-xs text-gray-500 mb-5">This will remove all scheduled activities for today. Your saved activity library will remain intact.</p>
-            <div class="flex gap-2">
-                <button onclick="closeClearModal()" class="flex-1 py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold">Cancel</button>
-                <button onclick="confirmClearSchedule()" class="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold">Clear All</button>
+
+            <!-- Control Buttons -->
+            <div class="flex items-center space-x-3 w-full">
+                <button id="pomoStartBtn" onclick="togglePomodoro()" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-red-500/20">
+                    Start Session
+                </button>
+                <button onclick="resetPomodoro()" class="p-2.5 rounded-xl bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 text-google-textMuted dark:text-google-darkMuted">
+                    <i class="fa-solid fa-rotate-left text-sm"></i>
+                </button>
             </div>
         </div>
     </div>
+
+    <!-- MODAL 4: CONFIRM CLEAR DATA -->
+    <div id="clearConfirmModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-google-darkSurface border border-google-borderLight dark:border-google-darkBorder rounded-2xl shadow-xl w-full max-w-sm p-5 space-y-4 text-center">
+            <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-bold">Clear All Data?</h3>
+                <p class="text-xs text-google-textMuted dark:text-google-darkMuted mt-1">This will erase all scheduled blocks, saved activities, meals, and settings from local storage. This action cannot be undone.</p>
+            </div>
+            <div class="flex space-x-2 pt-2">
+                <button onclick="closeModal('clearConfirmModal')" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200">Cancel</button>
+                <button onclick="executeClearAll()" class="flex-1 py-2 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white">Reset Everything</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
     <script>
-        
-        // --- CATEGORIES DEFINITION ---
-        const DEFAULT_CATEGORIES = {
-            'Academics': { name: 'Academics', color: '#4285F4' },
-            'Sports': { name: 'Sports', color: '#34A853' },
-            'Hobbies': { name: 'Hobbies', color: '#FBBC04' },
-            'Chores': { name: 'Chores', color: '#EA4335' },
-            'Work': { name: 'Work', color: '#8E24AA' },
-            'School': { name: 'School', color: '#00ACC1' }
-        };
+        /* APP STATE MANAGEMENT */
+        const STORAGE_KEY = 'FLEXSCHEDULE_PROD_DATA_V1';
 
-        // --- MOTIVATIONAL QUOTES ---
-        const MOTIVATION_QUOTES = [
-            '"You don\'t have to be extreme, just consistent." — Anonymous',
-            '"Focus on being productive instead of busy." — Tim Ferriss',
-            '"Small daily improvements over time lead to stunning results." — Robin Sharma',
-            '"The secret of getting ahead is getting started." — Mark Twain',
-            '"Action is the foundational key to all success." — Pablo Picasso'
+        const DEFAULT_QUOTES = [
+            { quote: "Efficiency is doing things right; effectiveness is doing the right things.", author: "Peter Drucker" },
+            { quote: "Action is the foundational key to all success.", author: "Pablo Picasso" },
+            { quote: "You don't have to see the whole staircase, just take the first step.", author: "Martin Luther King Jr." },
+            { quote: "Focus on being productive instead of busy.", author: "Tim Ferriss" },
+            { quote: "Small daily improvements over time lead to stunning results.", author: "Robin Sharma" }
         ];
 
-        // --- APPLICATION STATE ---
-        let state = {
-            activeView: 'daily', // 'daily', 'weekly', 'food', 'month'
-            selectedDayIndex: 2, // 0 = Mon ... 2 = Wed
-            categories: { ...DEFAULT_CATEGORIES },
-            activeCategoryFilter: 'All',
-            activeLibraryFilter: 'All',
-            settings: {
-                startHour: 7, // 7 AM
-                endHour: 21,  // 9 PM
-                intervalMins: 60 // Default 60m (can be set to 45m, 30m, 15m!)
-            },
-            savedActivities: [
-                { id: 'act-1', name: 'School', category: 'School', color: '#00ACC1', duration: 480, notes: 'Daily classes & study' },
-                { id: 'act-2', name: 'Gym & Fitness', category: 'Sports', color: '#34A853', duration: 60, notes: 'Strength training' },
-                { id: 'act-3', name: 'Deep Work Session', category: 'Work', color: '#8E24AA', duration: 120, notes: 'Focus block' },
-                { id: 'act-4', name: 'Reading & Research', category: 'Academics', color: '#4285F4', duration: 45, notes: 'Read chapters' },
-                { id: 'act-5', name: 'Coding Project', category: 'Hobbies', color: '#FBBC04', duration: 90, notes: 'FlexSchedule development' },
-                { id: 'act-6', name: 'Room Cleaning', category: 'Chores', color: '#EA4335', duration: 30, notes: 'Organize desk' }
-            ],
-            // Pre-populated with blue "School 8h - School" block spanning 7 AM to 3 PM
-            scheduledItems: [
-                { id: 'item-school-default', name: 'School', category: 'School', color: '#00ACC1', startMins: 420, durationMins: 480, completed: false, dayIndex: 2 }
-            ],
-            nutrition: {
-                goals: { cal: 2000, protein: 150, carbs: 220, fat: 65 },
-                meals: [
-                    { id: 'm-1', name: 'Oatmeal & Berries', cal: 350, protein: 12, carbs: 60, fat: 6 },
-                    { id: 'm-2', name: 'Grilled Chicken Salad', cal: 450, protein: 42, carbs: 15, fat: 18 }
-                ],
-                weight: 72.5
-            },
-            pomodoro: {
-                workMins: 25,
-                breakMins: 5,
-                timeRemaining: 1500, // seconds
-                isRunning: false,
-                isBreak: false,
-                timerId: null
-            }
+        const CATEGORY_COLORS = {
+            Academics: { bg: 'bg-blue-50 dark:bg-blue-950/40', text: 'text-google-blue', border: 'border-google-blue', hex: '#1A73E8' },
+            Sports: { bg: 'bg-emerald-50 dark:bg-emerald-950/40', text: 'text-emerald-600', border: 'border-emerald-500', hex: '#1E8E3E' },
+            Hobbies: { bg: 'bg-purple-50 dark:bg-purple-950/40', text: 'text-purple-600', border: 'border-purple-500', hex: '#A142F4' },
+            Chores: { bg: 'bg-amber-50 dark:bg-amber-950/40', text: 'text-amber-600', border: 'border-amber-500', hex: '#F9AB00' },
+            Work: { bg: 'bg-indigo-50 dark:bg-indigo-950/40', text: 'text-indigo-600', border: 'border-indigo-500', hex: '#6200EE' },
+            School: { bg: 'bg-pink-50 dark:bg-pink-950/40', text: 'text-pink-600', border: 'border-pink-500', hex: '#E52592' }
         };
 
-        function loadStateFromStorage() {
+        // App Central State initialized with strictly ZERO scheduled events and ZERO meals by default
+        let state = {
+            currentView: 'daily',
+            selectedDayIndex: new Date().getDay() === 0 ? 6 : new Date().getDay() - 1, // 0: Mon, 6: Sun
+            currentMonthOffset: 0,
+            settings: {
+                startHour: 7,
+                endHour: 20,
+                slotInterval: 30, // in minutes
+                darkMode: false
+            },
+            savedActivities: [], // Library of reusable activities
+            scheduledEvents: [], // Strictly EMPTY by default!
+            loggedMeals: [],     // Strictly EMPTY by default!
+            nutritionGoals: {
+                calories: 2000,
+                protein: 150,
+                carbs: 220,
+                fat: 65
+            },
+            weightLogs: [],
+            activeCategoryFilter: 'All',
+            activitySearchQuery: ''
+        };
+
+        function loadState() {
             try {
-                const saved = localStorage.getItem('flex_schedule_state');
+                const saved = localStorage.getItem(STORAGE_KEY);
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     state = { ...state, ...parsed };
                 }
-            } catch(e) {
-                console.warn('Could not load local state:', e);
+            } catch (e) {
+                console.error("Failed to parse local storage", e);
+            }
+            // Apply saved dark mode preference
+            if (state.settings.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
             }
         }
 
-        function saveStateToStorage() {
+        function saveState() {
             try {
-                localStorage.setItem('flex_schedule_state', JSON.stringify(state));
-            } catch(e) {
-                console.warn('Could not save state:', e);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.error("Failed to save state to local storage", e);
             }
         }
 
-        window.onload = function() {
-            loadStateFromStorage();
-            
-            // Initialize Lucide icons
-            lucide.createIcons();
-
-            // Render view elements
-            renderCategoryFilters();
-            renderLibrary();
-            renderGrid();
-            renderNutritionView();
-            renderMonthView();
-
-            // Set default settings dropdowns
-            populateSettingsHourDropdowns();
-
-            // Refresh icons after dynamic rendering
-            setTimeout(() => lucide.createIcons(), 50);
-        };
+        function initApp() {
+            loadState();
+            renderDayStrip();
+            renderSidebar();
+            renderCurrentView();
+            refreshQuote();
+        }
 
         function switchView(viewName) {
-            state.activeView = viewName;
+            state.currentView = viewName;
             
-            // Tab styling updates
-            const tabs = ['daily', 'weekly', 'food', 'month'];
-            tabs.forEach(t => {
-                const btn = document.getElementById(`tab-${t}`);
-                if (t === viewName) {
-                    btn.className = "px-4 py-1.5 rounded-full text-xs font-semibold smooth-transition bg-google-blue text-white shadow-sm";
-                } else {
-                    btn.className = "px-4 py-1.5 rounded-full text-xs font-semibold smooth-transition text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white";
+            // Update Tab Highlight
+            ['daily', 'weekly', 'month', 'food'].forEach(v => {
+                const btn = document.getElementById(`viewBtn-${v}`);
+                if (btn) {
+                    if (v === viewName) {
+                        btn.className = "px-3 py-1.5 rounded-lg transition-all text-google-blue bg-white dark:bg-neutral-700 dark:text-white shadow-sm font-bold";
+                    } else {
+                        btn.className = "px-3 py-1.5 rounded-lg transition-all text-google-textMuted dark:text-google-darkMuted hover:text-google-textDark dark:hover:text-white";
+                    }
+                }
+                const container = document.getElementById(`view-${v}`);
+                if (container) {
+                    if (v === viewName) {
+                        container.classList.remove('hidden');
+                        container.classList.add('flex');
+                    } else {
+                        container.classList.add('hidden');
+                        container.classList.remove('flex');
+                    }
                 }
             });
 
-            // View panel visibilities
-            document.getElementById('view-daily').classList.toggle('hidden', viewName !== 'daily');
-            document.getElementById('view-weekly').classList.toggle('hidden', viewName !== 'weekly');
-            document.getElementById('view-food').classList.toggle('hidden', viewName !== 'food');
-            document.getElementById('view-month').classList.toggle('hidden', viewName !== 'month');
+            // Toggle progress header visibility (only for daily view)
+            const dailyHeader = document.getElementById('dailyProgressHeader');
+            if (dailyHeader) {
+                dailyHeader.style.display = (viewName === 'daily') ? 'flex' : 'none';
+            }
 
-            // Sidebar switching (Food vs Activity Library)
-            document.getElementById('sidebar-activity-library').classList.toggle('hidden', viewName === 'food');
-            document.getElementById('sidebar-nutrition-goals').classList.toggle('hidden', viewName !== 'food');
-            
-            // Day Strip visibility
-            document.getElementById('day-strip').classList.toggle('hidden', viewName === 'food' || viewName === 'month');
-
-            if (viewName === 'weekly') renderWeeklyView();
-            if (viewName === 'month') renderMonthView();
-            if (viewName === 'food') renderNutritionView();
-            if (viewName === 'daily') renderGrid();
-
-            lucide.createIcons();
+            renderSidebar();
+            renderCurrentView();
+            saveState();
         }
 
-        function selectDay(dayIdx) {
-            state.selectedDayIndex = dayIdx;
-            const btns = document.querySelectorAll('.day-btn');
-            btns.forEach((btn, idx) => {
-                if (idx === dayIdx) {
-                    btn.className = "day-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-google-blue text-white shadow-sm";
-                } else {
-                    btn.className = "day-btn px-2.5 py-1 rounded-lg text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700";
-                }
-            });
-            renderGrid();
-        }
+        const DAYS_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-            saveStateToStorage();
-        }
+        function renderDayStrip() {
+            const container = document.getElementById('dayStripContainer');
+            if (!container) return;
 
-        function refreshQuote() {
-            const quote = MOTIVATION_QUOTES[Math.floor(Math.random() * MOTIVATION_QUOTES.length)];
-            document.getElementById('motivation-text').innerText = quote;
-        }
-
-        function renderCategoryFilters() {
-            const container = document.getElementById('category-filter-chips');
-            const libContainer = document.getElementById('library-category-filters');
-            
-            let html = `<button onclick="setCategoryFilter('All')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold smooth-transition ${state.activeCategoryFilter === 'All' ? 'bg-google-blue text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}">All</button>`;
-            
-            let libHtml = `<button onclick="setLibraryFilter('All')" class="px-2 py-0.5 rounded-full text-[10px] font-medium ${state.activeLibraryFilter === 'All' ? 'bg-google-blue text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}">All</button>`;
-
-            Object.values(state.categories).forEach(cat => {
-                const isActive = state.activeCategoryFilter === cat.name;
-                html += `
-                    <button onclick="setCategoryFilter('${cat.name}')" class="px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1.5 smooth-transition ${isActive ? 'bg-google-blue text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}">
-                        <span class="w-2 h-2 rounded-full" style="background-color: ${cat.color}"></span>
-                        <span>${cat.name}</span>
+            container.innerHTML = DAYS_SHORT.map((day, idx) => {
+                const isSelected = idx === state.selectedDayIndex;
+                return `
+                    <button onclick="selectDay(${idx})" class="px-3 py-1 rounded-lg text-xs font-bold transition whitespace-nowrap ${isSelected ? 'bg-google-blue text-white shadow-sm' : 'text-google-textMuted dark:text-google-darkMuted hover:bg-gray-200 dark:hover:bg-neutral-700'}">
+                        ${day}
                     </button>
                 `;
+            }).join('');
+        }
 
-                const isLibActive = state.activeLibraryFilter === cat.name;
-                libHtml += `
-                    <button onclick="setLibraryFilter('${cat.name}')" class="px-2 py-0.5 rounded-full text-[10px] font-medium flex items-center gap-1 shrink-0 ${isLibActive ? 'bg-google-blue text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}">
-                        <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${cat.color}"></span>
-                        <span>${cat.name}</span>
-                    </button>
+        function selectDay(idx) {
+            state.selectedDayIndex = idx;
+            renderDayStrip();
+            renderCurrentView();
+        }
+
+        function renderSidebar() {
+            const container = document.getElementById('sidebarContent');
+            if (!container) return;
+
+            if (state.currentView === 'food') {
+                // Render Daily Nutrition Goals Setup
+                container.innerHTML = `
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-neutral-800 mb-4">
+                        <h2 class="text-sm font-bold flex items-center space-x-2">
+                            <i class="fa-solid fa-bullseye text-google-blue"></i>
+                            <span>Daily Nutrition Goals</span>
+                        </h2>
+                    </div>
+                    <form onsubmit="handleUpdateGoals(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block font-semibold mb-1">Calorie Target (kcal)</label>
+                            <input type="number" id="goalCalories" value="${state.nutritionGoals.calories}" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 font-bold">
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1">Protein Goal (g)</label>
+                            <input type="number" id="goalProtein" value="${state.nutritionGoals.protein}" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1">Carbs Goal (g)</label>
+                            <input type="number" id="goalCarbs" value="${state.nutritionGoals.carbs}" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-1">Fat Goal (g)</label>
+                            <input type="number" id="goalFat" value="${state.nutritionGoals.fat}" required class="w-full px-3 py-1.5 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800">
+                        </div>
+                        <button type="submit" class="w-full bg-google-blue hover:bg-google-hoverBlue text-white font-bold py-2 rounded-xl transition shadow mt-2">
+                            Update Goals
+                        </button>
+                    </form>
                 `;
-            });
+            } else {
+                // Render Saved Activity Library
+                const categories = ['All', 'Academics', 'Sports', 'Hobbies', 'Chores', 'Work', 'School'];
+                
+                // Filter activities
+                const filtered = state.savedActivities.filter(act => {
+                    const matchesCat = state.activeCategoryFilter === 'All' || act.category === state.activeCategoryFilter;
+                    const matchesSearch = act.name.toLowerCase().includes(state.activitySearchQuery.toLowerCase());
+                    return matchesCat && matchesSearch;
+                });
 
-            container.innerHTML = html;
-            libContainer.innerHTML = libHtml;
+                container.innerHTML = `
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-neutral-800 mb-3">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-shapes text-google-blue"></i>
+                            <h2 class="text-sm font-bold">Activity Library</h2>
+                        </div>
+                        <button onclick="openActivityModal()" class="p-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/40 text-google-blue hover:bg-blue-100 text-xs font-bold flex items-center space-x-1">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>New</span>
+                        </button>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="relative mb-3">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-gray-400"></i>
+                        <input type="text" placeholder="Search activities..." value="${state.activitySearchQuery}" oninput="handleActivitySearch(this.value)" class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800 focus:outline-none focus:ring-1 focus:ring-google-blue">
+                    </div>
+
+                    <!-- Category Chips Filter -->
+                    <div class="flex items-center space-x-1 overflow-x-auto pb-2 mb-3 max-w-full">
+                        ${categories.map(cat => `
+                            <button onclick="setCategoryFilter('${cat}')" class="px-2.5 py-1 rounded-lg text-[10px] font-bold whitespace-nowrap transition ${state.activeCategoryFilter === cat ? 'bg-google-blue text-white' : 'bg-gray-100 dark:bg-neutral-800 text-google-textMuted hover:bg-gray-200'}">
+                                ${cat}
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <!-- Cards Container -->
+                    <div class="flex-1 overflow-y-auto space-y-2 pr-1" id="libraryCardsContainer">
+                        ${filtered.length === 0 ? `
+                            <div class="p-6 text-center text-google-textMuted dark:text-google-darkMuted border-2 border-dashed border-gray-200 dark:border-neutral-800 rounded-xl my-auto">
+                                <i class="fa-solid fa-layer-group text-2xl mb-2 text-gray-300 dark:text-neutral-700"></i>
+                                <p class="text-xs font-medium">No saved activities yet.</p>
+                                <button onclick="openActivityModal()" class="mt-2 text-xs text-google-blue font-bold hover:underline">+ Add First Activity</button>
+                            </div>
+                        ` : filtered.map(act => renderActivityCardHTML(act)).join('')}
+                    </div>
+                `;
+
+                attachLibraryDragListeners();
+            }
         }
 
-        function setCategoryFilter(catName) {
-            state.activeCategoryFilter = catName;
-            renderCategoryFilters();
-            renderGrid();
+        function renderActivityCardHTML(act) {
+            const catStyle = CATEGORY_COLORS[act.category] || CATEGORY_COLORS.Academics;
+            const iconHTML = act.icon.startsWith('fa-') ? `<i class="fa-solid ${act.icon}"></i>` : act.icon;
+
+            return `
+                <div draggable="true" data-activity-id="${act.id}" class="activity-card group p-2.5 rounded-xl border ${catStyle.border} ${catStyle.bg} flex items-center justify-between cursor-grab active:cursor-grabbing hover:shadow-md transition">
+                    <div class="flex items-center space-x-2.5 min-w-0">
+                        <div class="w-7 h-7 rounded-lg bg-white/80 dark:bg-neutral-800 flex items-center justify-center text-xs ${catStyle.text} font-bold shadow-sm">
+                            ${iconHTML}
+                        </div>
+                        <div class="truncate">
+                            <h4 class="text-xs font-bold truncate">${act.name}</h4>
+                            <span class="text-[10px] text-google-textMuted dark:text-google-darkMuted font-medium">${act.duration} mins • ${act.category}</span>
+                        </div>
+                    </div>
+                    <div class="opacity-0 group-hover:opacity-100 flex items-center space-x-1 transition">
+                        <button onclick="editActivity('${act.id}')" title="Edit" class="p-1 text-gray-400 hover:text-google-blue text-xs"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteActivity('${act.id}')" title="Delete" class="p-1 text-gray-400 hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
         }
 
-        function setLibraryFilter(catName) {
-            state.activeLibraryFilter = catName;
-            renderCategoryFilters();
-            renderLibrary();
+        function renderCurrentView() {
+            if (state.currentView === 'daily') {
+                renderDailyView();
+            } else if (state.currentView === 'weekly') {
+                renderWeeklyView();
+            } else if (state.currentView === 'month') {
+                renderMonthView();
+            } else if (state.currentView === 'food') {
+                renderFoodView();
+            }
         }
 
-        function renderLibrary() {
-            const list = document.getElementById('library-activity-list');
-            const search = document.getElementById('library-search')?.value.toLowerCase() || '';
+        function renderDailyView() {
+            const container = document.getElementById('dailyTimeGrid');
+            if (!container) return;
 
-            const filtered = state.savedActivities.filter(act => {
-                const matchCat = state.activeLibraryFilter === 'All' || act.category === state.activeLibraryFilter;
-                const matchSearch = act.name.toLowerCase().includes(search);
-                return matchCat && matchSearch;
-            });
+            // Generate slots based on startHour, endHour, and slotInterval
+            const slots = generateTimeSlots(state.settings.startHour, state.settings.endHour, state.settings.slotInterval);
+            
+            // Get events for current day index
+            const dayEvents = state.scheduledEvents.filter(e => e.dayIndex === state.selectedDayIndex);
 
-            if (filtered.length === 0) {
-                list.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs">No saved activities found.</div>`;
+            // Calculate progress header
+            const totalCount = dayEvents.length;
+            const completedCount = dayEvents.filter(e => e.completed).length;
+            const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+            document.getElementById('progressCountBadge').innerText = `${completedCount}/${totalCount} completed`;
+            document.getElementById('progressPercentBadge').innerText = `${percent}%`;
+            document.getElementById('dailyProgressBar').style.width = `${percent}%`;
+            document.getElementById('currentDateDisplay').innerText = `${DAYS_SHORT[state.selectedDayIndex]} Schedule`;
+
+            if (slots.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-gray-400">Invalid time range configured. Check Settings.</div>`;
                 return;
             }
 
-            list.innerHTML = filtered.map(act => {
-                const durText = act.duration >= 60 ? `${(act.duration/60).toFixed(1).replace('.0','')}h` : `${act.duration}m`;
+            container.innerHTML = slots.map(slot => {
+                // Check if an event starts at this slot
+                const eventAtSlot = dayEvents.find(e => e.startTime === slot.timeStr);
+
                 return `
-                    <div class="group relative bg-gray-50 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 border border-gray-200/70 dark:border-gray-700/70 rounded-xl p-3 shadow-sm hover:shadow-md smooth-transition cursor-grab active:cursor-grabbing flex items-center justify-between"
-                         draggable="true"
-                         ondragstart="handleLibraryDragStart(event, '${act.id}')">
-                        
-                        <div class="flex items-center gap-3">
-                            <div class="w-1.5 h-8 rounded-full" style="background-color: ${act.color}"></div>
-                            <div>
-                                <h4 class="font-bold text-xs text-gray-900 dark:text-white">${act.name}</h4>
-                                <span class="text-[10px] text-gray-400 font-medium">${act.category}</span>
-                            </div>
+                    <div class="time-slot-row flex min-h-[60px] border-b border-gray-100 dark:border-neutral-800/60 relative group" data-time="${slot.timeStr}">
+                        <!-- Time Label Column -->
+                        <div class="w-16 md:w-20 pr-3 py-2 text-right text-xs font-semibold text-google-textMuted dark:text-google-darkMuted shrink-0 select-none border-r border-gray-100 dark:border-neutral-800">
+                            ${slot.timeStr}
                         </div>
 
-                        <div class="flex items-center gap-2">
-                            <span class="px-2 py-0.5 bg-blue-50 dark:bg-blue-950/40 text-google-blue font-bold text-[10px] rounded-lg">
-                                ${durText}
-                            </span>
-                            <div class="opacity-0 group-hover:opacity-100 flex items-center gap-1 smooth-transition">
-                                <button onclick="editActivity('${act.id}')" class="p-1 text-gray-400 hover:text-google-blue"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-                                <button onclick="deleteActivity('${act.id}')" class="p-1 text-gray-400 hover:text-red-500"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                            </div>
+                        <!-- Drop Canvas Cell -->
+                        <div class="time-drop-zone flex-1 p-1.5 relative min-h-[58px] transition" data-time="${slot.timeStr}">
+                            ${eventAtSlot ? renderScheduledBlockHTML(eventAtSlot) : ''}
                         </div>
                     </div>
                 `;
             }).join('');
 
-            lucide.createIcons();
-        }
-
-        function filterLibrary() {
-            renderLibrary();
-        }
-
-        function renderGrid() {
-            const timeLabelsCol = document.getElementById('grid-time-labels');
-            const linesLayer = document.getElementById('grid-lines-layer');
-            const blocksLayer = document.getElementById('scheduled-blocks-layer');
-
-            const startMins = state.settings.startHour * 60; // e.g. 7 * 60 = 420
-            const endMins = state.settings.endHour * 60;     // e.g. 21 * 60 = 1260
-            const intervalMins = state.settings.intervalMins || 60; // 15, 30, 45, or 60
-
-            const slotCount = Math.ceil((endMins - startMins) / intervalMins);
-            const slotPxHeight = 54; // Each time step is 54px high
-            const totalGridPx = slotCount * slotPxHeight;
-
-            // Render Time Labels
-            let labelsHtml = '';
-            let linesHtml = '';
-
-            for (let i = 0; i <= slotCount; i++) {
-                const currentMins = startMins + (i * intervalMins);
-                const h = Math.floor(currentMins / 60);
-                const m = currentMins % 60;
-                const ampm = h >= 12 ? 'PM' : 'AM';
-                const displayH = h % 12 === 0 ? 12 : h % 12;
-                const displayM = m < 10 ? `0${m}` : m;
-                const timeStr = `${displayH}:${displayM} ${ampm}`;
-
-                const topPx = i * slotPxHeight;
-
-                labelsHtml += `
-                    <div class="absolute transform -translate-y-2.5 right-3 font-semibold text-[11px]" style="top: ${topPx}px">
-                        ${timeStr}
+            // Display Empty Grid Hint if zero items scheduled
+            if (dayEvents.length === 0) {
+                const emptyHint = document.createElement('div');
+                emptyHint.className = 'absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-6 text-center';
+                emptyHint.innerHTML = `
+                    <div class="bg-white/90 dark:bg-neutral-800/90 backdrop-blur border border-google-borderLight dark:border-google-darkBorder p-6 rounded-2xl shadow-sm max-w-sm">
+                        <i class="fa-regular fa-calendar-plus text-3xl text-google-blue mb-2"></i>
+                        <h4 class="font-bold text-sm">Your Schedule is Empty</h4>
+                        <p class="text-xs text-google-textMuted dark:text-google-darkMuted mt-1">Drag an activity from the Saved Library on the left into any time slot to start planning your day!</p>
                     </div>
                 `;
-
-                linesHtml += `
-                    <div class="absolute left-0 right-0 border-b border-gray-100 dark:border-gray-800/80" style="top: ${topPx}px"></div>
-                `;
+                container.appendChild(emptyHint);
             }
 
-            timeLabelsCol.innerHTML = `<div class="relative w-full" style="height: ${totalGridPx}px">${labelsHtml}</div>`;
-            linesLayer.innerHTML = `<div class="relative w-full" style="height: ${totalGridPx}px">${linesHtml}</div>`;
+            attachSlotDropListeners();
+        }
 
-            // Render Schedule Blocks for selected day & category filter
-            const dayItems = state.scheduledItems.filter(item => {
-                const matchDay = (item.dayIndex === undefined ? 2 : item.dayIndex) === state.selectedDayIndex;
-                const matchCat = state.activeCategoryFilter === 'All' || item.category === state.activeCategoryFilter;
-                return matchDay && matchCat;
-            });
+        function renderScheduledBlockHTML(evt) {
+            const catStyle = CATEGORY_COLORS[evt.category] || CATEGORY_COLORS.Academics;
+            const iconHTML = evt.icon && evt.icon.startsWith('fa-') ? `<i class="fa-solid ${evt.icon}"></i>` : (evt.icon || '<i class="fa-solid fa-clock"></i>');
 
-            // Pixels per minute ratio
-            const pxPerMin = slotPxHeight / intervalMins;
+            return `
+                <div class="scheduled-block w-full h-full p-2.5 rounded-xl border ${catStyle.border} ${catStyle.bg} flex items-center justify-between shadow-sm transition ${evt.completed ? 'opacity-50 line-through' : ''}">
+                    <div class="flex items-center space-x-2.5 min-w-0">
+                        <button onclick="toggleEventComplete('${evt.id}')" class="text-sm cursor-pointer ${evt.completed ? 'text-emerald-500' : 'text-gray-300 hover:text-emerald-500'}">
+                            <i class="fa-${evt.completed ? 'solid fa-circle-check' : 'regular fa-circle'}"></i>
+                        </button>
+                        <div class="w-6 h-6 rounded-md bg-white/80 dark:bg-neutral-800 flex items-center justify-center text-xs ${catStyle.text} font-bold shrink-0">
+                            ${iconHTML}
+                        </div>
+                        <div class="truncate">
+                            <h4 class="text-xs font-bold truncate">${evt.name}</h4>
+                            <span class="text-[10px] text-google-textMuted dark:text-google-darkMuted font-medium">${evt.startTime} (${evt.duration} mins)</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-1 shrink-0">
+                        <button onclick="removeScheduledEvent('${evt.id}')" title="Remove block" class="p-1 text-gray-400 hover:text-red-500 text-xs">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
 
-            let blocksHtml = '';
-            dayItems.forEach(item => {
-                const topPx = (item.startMins - startMins) * pxPerMin;
-                const heightPx = Math.max(30, item.durationMins * pxPerMin);
+        function generateTimeSlots(startH, endH, intervalMins) {
+            const slots = [];
+            let current = startH * 60; // in minutes from midnight
+            const end = endH * 60;
 
-                const durHours = (item.durationMins / 60).toFixed(1).replace('.0','');
-                const durText = item.durationMins >= 60 ? `${durHours}h` : `${item.durationMins}m`;
+            while (current <= end) {
+                const hh = Math.floor(current / 60);
+                const mm = current % 60;
+                const hhStr = hh.toString().padStart(2, '0');
+                const mmStr = mm.toString().padStart(2, '0');
+                slots.push({
+                    totalMins: current,
+                    timeStr: `${hhStr}:${mmStr}`
+                });
+                current += intervalMins;
+            }
+            return slots;
+        }
 
-                blocksHtml += `
-                    <div class="absolute left-2 right-2 rounded-2xl p-3 shadow-md border border-white/20 text-white smooth-transition cursor-pointer select-none group flex flex-col justify-between"
-                         style="top: ${topPx}px; height: ${heightPx}px; background-color: ${item.color || '#00ACC1'};"
-                         onclick="openBlockEditModal('${item.id}')"
-                         draggable="true"
-                         ondragstart="handleBlockDragStart(event, '${item.id}')">
-                        
-                        <div>
-                            <div class="flex items-center justify-between">
-                                <h4 class="font-bold text-sm tracking-tight leading-tight">${item.name}</h4>
-                                ${item.completed ? '<span class="bg-white/30 px-2 py-0.5 rounded-full text-[10px] font-bold">✓ Done</span>' : ''}
+        function renderWeeklyView() {
+            const container = document.getElementById('weeklyTimeGrid');
+            if (!container) return;
+
+            const slots = generateTimeSlots(state.settings.startHour, state.settings.endHour, state.settings.slotInterval);
+
+            container.innerHTML = slots.map(slot => `
+                <div class="grid grid-cols-8 text-xs min-h-[50px]">
+                    <!-- Time Column -->
+                    <div class="py-2 px-1 text-center font-bold text-google-textMuted dark:text-google-darkMuted border-r border-gray-100 dark:border-neutral-800">
+                        ${slot.timeStr}
+                    </div>
+                    <!-- Day Columns (0: Mon -> 6: Sun) -->
+                    ${[0,1,2,3,4,5,6].map(dayIdx => {
+                        const event = state.scheduledEvents.find(e => e.dayIndex === dayIdx && e.startTime === slot.timeStr);
+                        const catStyle = event ? (CATEGORY_COLORS[event.category] || CATEGORY_COLORS.Academics) : null;
+
+                        return `
+                            <div class="p-1 border-r border-gray-100 dark:border-neutral-800 relative time-drop-zone min-h-[48px]" data-day="${dayIdx}" data-time="${slot.timeStr}">
+                                ${event ? `
+                                    <div class="p-1.5 rounded-lg text-[10px] border ${catStyle.border} ${catStyle.bg} font-bold truncate flex items-center justify-between">
+                                        <span class="truncate">${event.name}</span>
+                                        <button onclick="removeScheduledEvent('${event.id}')" class="text-gray-400 hover:text-red-500 text-[10px] ml-1"><i class="fa-solid fa-xmark"></i></button>
+                                    </div>
+                                ` : ''}
                             </div>
-                            <p class="text-xs opacity-90 font-medium mt-0.5">${durText} · ${item.category}</p>
-                        </div>
+                        `;
+                    }).join('')}
+                </div>
+            `).join('');
 
-                        <!-- Bottom Resize Handle -->
-                        <div class="resize-handle absolute bottom-0 left-0 right-0 h-3 rounded-b-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 smooth-transition"
-                             onmousedown="initResizeBlock(event, '${item.id}')"
-                             ontouchstart="initResizeBlock(event, '${item.id}')">
-                            <div class="w-8 h-1 bg-white/60 rounded-full"></div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            blocksLayer.innerHTML = `<div class="relative w-full" style="height: ${totalGridPx}px">${blocksHtml}</div>`;
-
-            updateDailyProgress();
+            attachSlotDropListeners();
         }
 
-        function updateDailyProgress() {
-            const dayItems = state.scheduledItems.filter(i => (i.dayIndex === undefined ? 2 : i.dayIndex) === state.selectedDayIndex);
-            const total = dayItems.length;
-            const completed = dayItems.filter(i => i.completed).length;
+        function renderMonthView() {
+            const container = document.getElementById('monthGrid');
+            const title = document.getElementById('monthTitle');
+            if (!container || !title) return;
 
-            const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
-
-            document.getElementById('progress-percent-text').innerText = `${percent}%`;
-            document.getElementById('progress-count-badge').innerText = `${completed} / ${total} completed`;
-            document.getElementById('progress-bar-fill').style.width = `${percent}%`;
-
-            // SVG Stroke progress
-            const circle = document.getElementById('progress-circle-stroke');
-            circle.setAttribute('stroke-dasharray', `${percent}, 100`);
-
-            const cta = document.getElementById('progress-cta');
-            if (percent === 100 && total > 0) {
-                cta.innerText = "🎉 All done for today!";
-            } else if (percent > 0) {
-                cta.innerText = "⚡ Great progress!";
-            } else {
-                cta.innerText = "🚀 Get started!";
-            }
-        }
-
-        let draggedPayload = null;
-
-        function handleLibraryDragStart(e, id) {
-            const act = state.savedActivities.find(a => a.id === id);
-            draggedPayload = { type: 'library', data: act };
-            e.dataTransfer.setData('text/plain', id);
-        }
-
-        function handleBlockDragStart(e, id) {
-            const item = state.scheduledItems.find(i => i.id === id);
-            draggedPayload = { type: 'scheduled', data: item };
-            e.dataTransfer.setData('text/plain', id);
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            const canvas = document.getElementById('daily-schedule-canvas');
-            canvas.classList.add('drag-over');
-        }
-
-        function handleDragLeave(e) {
-            const canvas = document.getElementById('daily-schedule-canvas');
-            canvas.classList.remove('drag-over');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            const canvas = document.getElementById('daily-schedule-canvas');
-            canvas.classList.remove('drag-over');
-
-            if (!draggedPayload) return;
-
-            const rect = canvas.getBoundingClientRect();
-            const dropY = e.clientY - rect.top;
-
-            const startMins = state.settings.startHour * 60;
-            const endMins = state.settings.endHour * 60;
-            const intervalMins = state.settings.intervalMins || 60;
-            const slotCount = Math.ceil((endMins - startMins) / intervalMins);
-            const totalGridPx = slotCount * 54;
-
-            const pxPerMin = 54 / intervalMins;
-            let calculatedMins = startMins + Math.round(dropY / pxPerMin);
-
-            // Snap to nearest 15 mins
-            calculatedMins = Math.round(calculatedMins / 15) * 15;
-            calculatedMins = Math.max(startMins, Math.min(endMins - 30, calculatedMins));
-
-            if (draggedPayload.type === 'library') {
-                const act = draggedPayload.data;
-                const newItem = {
-                    id: 'item-' + Date.now(),
-                    name: act.name,
-                    category: act.category,
-                    color: act.color,
-                    startMins: calculatedMins,
-                    durationMins: act.duration || 60,
-                    completed: false,
-                    dayIndex: state.selectedDayIndex
-                };
-                state.scheduledItems.push(newItem);
-            } else if (draggedPayload.type === 'scheduled') {
-                const item = state.scheduledItems.find(i => i.id === draggedPayload.data.id);
-                if (item) {
-                    item.startMins = calculatedMins;
-                }
-            }
-
-            draggedPayload = null;
-            saveStateToStorage();
-            renderGrid();
-        }
-
-        function initResizeBlock(e, itemId) {
-            e.stopPropagation();
-            e.preventDefault();
-
-            const item = state.scheduledItems.find(i => i.id === itemId);
-            if (!item) return;
-
-            const startY = e.clientY || e.touches[0].clientY;
-            const initialDuration = item.durationMins;
-            const pxPerMin = 54 / (state.settings.intervalMins || 60);
-
-            function onMouseMove(moveEvent) {
-                const currentY = moveEvent.clientY || (moveEvent.touches && moveEvent.touches[0].clientY);
-                const deltaY = currentY - startY;
-                const deltaMins = Math.round((deltaY / pxPerMin) / 15) * 15;
-                
-                item.durationMins = Math.max(15, initialDuration + deltaMins);
-                renderGrid();
-            }
-
-            function onMouseUp() {
-                window.removeEventListener('mousemove', onMouseMove);
-                window.removeEventListener('mouseup', onMouseUp);
-                window.removeEventListener('touchmove', onMouseMove);
-                window.removeEventListener('touchend', onMouseUp);
-                saveStateToStorage();
-            }
-
-            window.addEventListener('mousemove', onMouseMove);
-            window.addEventListener('mouseup', onMouseUp);
-            window.addEventListener('touchmove', onMouseMove);
-            window.addEventListener('touchend', onMouseUp);
-        }
-
-        function openPomodoroModal() {
-            document.getElementById('pomodoro-modal').classList.remove('hidden');
-        }
-
-        function closePomodoroModal() {
-            document.getElementById('pomodoro-modal').classList.add('hidden');
-        }
-
-        function setPomoPreset(work, breakTime) {
-            document.getElementById('pomo-work-input').value = work;
-            document.getElementById('pomo-break-input').value = breakTime;
-            state.pomodoro.workMins = work;
-            state.pomodoro.breakMins = breakTime;
-            resetPomoTimer();
-        }
-
-        function togglePomoTimer() {
-            const btn = document.getElementById('pomo-start-btn');
-            if (state.pomodoro.isRunning) {
-                clearInterval(state.pomodoro.timerId);
-                state.pomodoro.isRunning = false;
-                btn.innerText = "Resume Timer";
-                btn.className = "flex-1 py-3 bg-google-blue hover:bg-google-hoverBlue text-white font-bold text-sm rounded-2xl shadow-md smooth-transition";
-            } else {
-                state.pomodoro.isRunning = true;
-                btn.innerText = "Pause Timer";
-                btn.className = "flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm rounded-2xl shadow-md smooth-transition";
-
-                state.pomodoro.timerId = setInterval(() => {
-                    if (state.pomodoro.timeRemaining > 0) {
-                        state.pomodoro.timeRemaining--;
-                        updatePomoUI();
-                    } else {
-                        // Timer completed!
-                        playAudioChime();
-                        clearInterval(state.pomodoro.timerId);
-                        state.pomodoro.isRunning = false;
-                        
-                        if (!state.pomodoro.isBreak) {
-                            state.pomodoro.isBreak = true;
-                            state.pomodoro.timeRemaining = parseInt(document.getElementById('pomo-break-input').value) * 60;
-                            document.getElementById('pomo-status-text').innerText = "Break Time ☕";
-                        } else {
-                            state.pomodoro.isBreak = false;
-                            state.pomodoro.timeRemaining = parseInt(document.getElementById('pomo-work-input').value) * 60;
-                            document.getElementById('pomo-status-text').innerText = "Focus Mode";
-                        }
-                        updatePomoUI();
-                        btn.innerText = "Start Timer";
-                    }
-                }, 1000);
-            }
-        }
-
-        function resetPomoTimer() {
-            clearInterval(state.pomodoro.timerId);
-            state.pomodoro.isRunning = false;
-            state.pomodoro.isBreak = false;
-            state.pomodoro.timeRemaining = parseInt(document.getElementById('pomo-work-input').value) * 60;
-            document.getElementById('pomo-start-btn').innerText = "Start Timer";
-            document.getElementById('pomo-status-text').innerText = "Focus Mode";
-            updatePomoUI();
-        }
-
-        function updatePomoUI() {
-            const mins = Math.floor(state.pomodoro.timeRemaining / 60);
-            const secs = state.pomodoro.timeRemaining % 60;
-            const display = `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
-            document.getElementById('pomo-timer-display').innerText = display;
-
-            const total = (state.pomodoro.isBreak ? parseInt(document.getElementById('pomo-break-input').value) : parseInt(document.getElementById('pomo-work-input').value)) * 60;
-            const percent = Math.round((state.pomodoro.timeRemaining / total) * 100);
-            document.getElementById('pomo-circle-stroke').setAttribute('stroke-dasharray', `${percent}, 100`);
-        }
-
-        function playAudioChime() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.3, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.8);
-            } catch(e) { console.log(e); }
-        }
-
-        function renderNutritionView() {
-            const goals = state.nutrition.goals;
-            const meals = state.nutrition.meals;
-
-            let consumedCal = 0, consumedP = 0, consumedC = 0, consumedF = 0;
-            meals.forEach(m => {
-                consumedCal += (m.cal || 0);
-                consumedP += (m.protein || 0);
-                consumedC += (m.carbs || 0);
-                consumedF += (m.fat || 0);
-            });
-
-            document.getElementById('food-consumed-cal').innerText = consumedCal;
-            document.getElementById('food-goal-cal').innerText = goals.cal;
+            const today = new Date();
+            const currentMonth = new Date(today.getFullYear(), today.getMonth() + state.currentMonthOffset, 1);
             
-            const remCal = goals.cal - consumedCal;
-            document.getElementById('food-remaining-badge').innerText = `${remCal >= 0 ? remCal : 0} kcal remaining`;
+            title.innerText = currentMonth.toLocaleDateString('default', { month: 'long', year: 'numeric' });
 
-            const calPercent = Math.min(100, Math.round((consumedCal / goals.cal) * 100));
-            document.getElementById('calorie-gauge-stroke').setAttribute('stroke-dasharray', `${calPercent}, 100`);
+            const firstDayIndex = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
+            const totalDays = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
 
-            // Macros
-            document.getElementById('macro-p-val').innerText = consumedP;
-            document.getElementById('macro-p-goal').innerText = goals.protein;
-            document.getElementById('macro-p-bar').style.width = `${Math.min(100, Math.round((consumedP / goals.protein) * 100))}%`;
+            let cellsHTML = '';
 
-            document.getElementById('macro-c-val').innerText = consumedC;
-            document.getElementById('macro-c-goal').innerText = goals.carbs;
-            document.getElementById('macro-c-bar').style.width = `${Math.min(100, Math.round((consumedC / goals.carbs) * 100))}%`;
-
-            document.getElementById('macro-f-val').innerText = consumedF;
-            document.getElementById('macro-f-goal').innerText = goals.fat;
-            document.getElementById('macro-f-bar').style.width = `${Math.min(100, Math.round((consumedF / goals.fat) * 100))}%`;
-
-            // Weight
-            if (state.nutrition.weight) {
-                document.getElementById('weight-input').value = state.nutrition.weight;
+            // Blank padding cells
+            for (let i = 0; i < firstDayIndex; i++) {
+                cellsHTML += `<div class="bg-gray-50/50 dark:bg-neutral-800/20 rounded-xl p-2 min-h-[80px]"></div>`;
             }
 
-            // Meals List
-            const list = document.getElementById('meals-list-container');
-            if (meals.length === 0) {
-                list.innerHTML = `<div class="text-center py-6 text-xs text-gray-400">No meals logged today.</div>`;
+            // Actual days
+            for (let day = 1; day <= totalDays; day++) {
+                const isToday = (day === today.getDate() && state.currentMonthOffset === 0);
+                cellsHTML += `
+                    <div class="border border-gray-100 dark:border-neutral-800 rounded-xl p-2 min-h-[80px] flex flex-col justify-between ${isToday ? 'bg-blue-50/50 dark:bg-blue-950/20 border-google-blue font-bold' : 'bg-white dark:bg-neutral-800/40'}">
+                        <span class="text-xs ${isToday ? 'text-google-blue' : 'text-google-textMuted'}">${day}</span>
+                        <div class="text-[9px] text-gray-400 italic">No events</div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = cellsHTML;
+        }
+
+        function changeMonth(delta) {
+            state.currentMonthOffset += delta;
+            renderMonthView();
+        }
+
+        function renderFoodView() {
+            const mealsList = document.getElementById('loggedMealsList');
+            if (!mealsList) return;
+
+            // Calculate current totals from logged meals
+            let totalCal = 0, totalP = 0, totalC = 0, totalF = 0;
+            state.loggedMeals.forEach(m => {
+                totalCal += (m.calories || 0);
+                totalP += (m.protein || 0);
+                totalC += (m.carbs || 0);
+                totalF += (m.fat || 0);
+            });
+
+            const targetCal = state.nutritionGoals.calories;
+            const remainingCal = Math.max(0, targetCal - totalCal);
+
+            document.getElementById('foodCalRemaining').innerText = remainingCal;
+            document.getElementById('foodCalEaten').innerText = `${totalCal} kcal`;
+            document.getElementById('foodCalTarget').innerText = `${targetCal} kcal`;
+
+            // SVG Circle Progress calculation (r = 40, circumference = 2 * pi * 40 ≈ 251.2)
+            const ring = document.getElementById('calorieRing');
+            if (ring) {
+                const fraction = Math.min(1, totalCal / targetCal);
+                const offset = 251.2 * (1 - fraction);
+                ring.style.strokeDashoffset = offset;
+            }
+
+            // Macro Stats
+            document.getElementById('proteinStat').innerText = `${totalP} / ${state.nutritionGoals.protein}g`;
+            document.getElementById('proteinBar').style.width = `${Math.min(100, (totalP / state.nutritionGoals.protein) * 100)}%`;
+
+            document.getElementById('carbsStat').innerText = `${totalC} / ${state.nutritionGoals.carbs}g`;
+            document.getElementById('carbsBar').style.width = `${Math.min(100, (totalC / state.nutritionGoals.carbs) * 100)}%`;
+
+            document.getElementById('fatStat').innerText = `${totalF} / ${state.nutritionGoals.fat}g`;
+            document.getElementById('fatBar').style.width = `${Math.min(100, (totalF / state.nutritionGoals.fat) * 100)}%`;
+
+            document.getElementById('mealCountBadge').innerText = `${state.loggedMeals.length} logged`;
+
+            // Render Logged Meals (Strictly EMPTY state if zero meals logged)
+            if (state.loggedMeals.length === 0) {
+                mealsList.innerHTML = `
+                    <div class="p-8 text-center border-2 border-dashed border-gray-200 dark:border-neutral-800 rounded-2xl">
+                        <i class="fa-solid fa-plate-wheat text-3xl text-gray-300 dark:text-neutral-700 mb-2"></i>
+                        <p class="text-xs font-semibold text-google-textMuted dark:text-google-darkMuted">No meals logged today yet.</p>
+                        <p class="text-[11px] text-gray-400 mt-1">Use the "Log a Meal" card above to record your breakfast, lunch, dinner or snacks!</p>
+                    </div>
+                `;
             } else {
-                list.innerHTML = meals.map(m => `
-                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                        <div>
-                            <h4 class="font-bold text-xs text-gray-900 dark:text-white">${m.name}</h4>
-                            <div class="text-[10px] text-gray-400 flex gap-2 mt-0.5">
-                                <span>P: ${m.protein}g</span>
-                                <span>C: ${m.carbs}g</span>
-                                <span>F: ${m.fat}g</span>
+                mealsList.innerHTML = state.loggedMeals.map(meal => `
+                    <div class="p-3 bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-xl flex items-center justify-between shadow-sm">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center text-xs font-bold">
+                                <i class="fa-solid fa-utensils"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold">${meal.name}</h4>
+                                <span class="text-[10px] text-google-textMuted dark:text-google-darkMuted font-medium">P: ${meal.protein || 0}g • C: ${meal.carbs || 0}g • F: ${meal.fat || 0}g</span>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="font-bold text-xs text-google-blue">${m.cal} kcal</span>
-                            <button onclick="deleteMeal('${m.id}')" class="text-gray-400 hover:text-red-500"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xs font-extrabold text-google-blue">${meal.calories} kcal</span>
+                            <button onclick="deleteMeal('${meal.id}')" title="Delete meal" class="p-1 text-gray-400 hover:text-red-500 text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 `).join('');
             }
 
-            lucide.createIcons();
+            // Summary card
+            document.getElementById('weeklyCalorieSummary').innerText = `${totalCal} / ${targetCal * 7} total estimated weekly kcal`;
         }
 
-        function updateNutritionGoals() {
-            state.nutrition.goals.cal = parseInt(document.getElementById('goal-calories').value) || 2000;
-            state.nutrition.goals.protein = parseInt(document.getElementById('goal-protein').value) || 150;
-            state.nutrition.goals.carbs = parseInt(document.getElementById('goal-carbs').value) || 220;
-            state.nutrition.goals.fat = parseInt(document.getElementById('goal-fat').value) || 65;
-            saveStateToStorage();
-            renderNutritionView();
+        let draggedActivityId = null;
+
+        function attachLibraryDragListeners() {
+            const cards = document.querySelectorAll('.activity-card');
+            cards.forEach(card => {
+                card.addEventListener('dragstart', (e) => {
+                    draggedActivityId = card.getAttribute('data-activity-id');
+                    card.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', draggedActivityId);
+                });
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('dragging');
+                });
+            });
         }
 
-        function handleAddMeal(e) {
-            e.preventDefault();
-            const name = document.getElementById('meal-name').value;
-            const cal = parseInt(document.getElementById('meal-cal').value) || 0;
-            const p = parseInt(document.getElementById('meal-protein').value) || 0;
-            const c = parseInt(document.getElementById('meal-carbs').value) || 0;
-            const f = parseInt(document.getElementById('meal-fat').value) || 0;
+        function attachSlotDropListeners() {
+            const dropZones = document.querySelectorAll('.time-drop-zone');
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
 
-            state.nutrition.meals.push({ id: 'meal-' + Date.now(), name, cal, protein: p, carbs: c, fat: f });
+                    const actId = e.dataTransfer.getData('text/plain') || draggedActivityId;
+                    const startTime = zone.getAttribute('data-time');
+                    const dayIdxAttr = zone.getAttribute('data-day');
+                    const dayIndex = dayIdxAttr !== null ? parseInt(dayIdxAttr, 10) : state.selectedDayIndex;
+
+                    if (actId && startTime) {
+                        scheduleActivityOnGrid(actId, startTime, dayIndex);
+                    }
+                });
+            });
+        }
+
+        function scheduleActivityOnGrid(actId, startTime, dayIndex) {
+            const act = state.savedActivities.find(a => a.id === actId);
+            if (!act) return;
+
+            // Remove any existing event in this exact slot for this day
+            state.scheduledEvents = state.scheduledEvents.filter(e => !(e.dayIndex === dayIndex && e.startTime === startTime));
+
+            const newEvent = {
+                id: 'evt_' + Date.now() + Math.random().toString(36).substr(2, 4),
+                activityId: act.id,
+                name: act.name,
+                category: act.category,
+                duration: act.duration,
+                icon: act.icon,
+                dayIndex: dayIndex,
+                startTime: startTime,
+                completed: false
+            };
+
+            state.scheduledEvents.push(newEvent);
+            saveState();
+            renderCurrentView();
+            showToast(`Scheduled "${act.name}" at ${startTime}`);
+        }
+
+        function toggleEventComplete(evtId) {
+            const evt = state.scheduledEvents.find(e => e.id === evtId);
+            if (evt) {
+                evt.completed = !evt.completed;
+                saveState();
+                renderCurrentView();
+            }
+        }
+
+        function removeScheduledEvent(evtId) {
+            state.scheduledEvents = state.scheduledEvents.filter(e => e.id !== evtId);
+            saveState();
+            renderCurrentView();
+            showToast("Event removed from schedule");
+        }
+
+        function openActivityModal(editId = null) {
+            document.getElementById('editActivityId').value = editId || '';
+            document.getElementById('activityModalTitle').innerText = editId ? 'Edit Saved Activity' : 'New Saved Activity';
             
-            // Clear inputs
-            document.getElementById('meal-name').value = '';
-            document.getElementById('meal-cal').value = '';
-            document.getElementById('meal-protein').value = '';
-            document.getElementById('meal-carbs').value = '';
-            document.getElementById('meal-fat').value = '';
-
-            saveStateToStorage();
-            renderNutritionView();
-        }
-
-        function deleteMeal(id) {
-            state.nutrition.meals = state.nutrition.meals.filter(m => m.id !== id);
-            saveStateToStorage();
-            renderNutritionView();
-        }
-
-        function saveWeightLog() {
-            state.nutrition.weight = parseFloat(document.getElementById('weight-input').value) || 70;
-            saveStateToStorage();
-        }
-
-        function renderWeeklyView() {
-            const container = document.getElementById('weekly-grid-container');
-            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-            container.innerHTML = days.map((dayName, idx) => {
-                const dayItems = state.scheduledItems.filter(i => (i.dayIndex === undefined ? 2 : i.dayIndex) === idx);
-                
-                return `
-                    <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3 border border-gray-200/80 dark:border-gray-700 flex flex-col h-full">
-                        <div class="font-bold text-xs text-gray-700 dark:text-gray-300 mb-2 text-center pb-2 border-b border-gray-200 dark:border-gray-700">
-                            ${dayName}
-                        </div>
-                        <div class="flex-1 space-y-2 overflow-y-auto">
-                            ${dayItems.map(item => `
-                                <div class="p-2 rounded-xl text-white text-xs shadow-sm font-semibold" style="background-color: ${item.color}">
-                                    ${item.name}
-                                    <div class="text-[10px] opacity-80">${item.durationMins >= 60 ? (item.durationMins/60)+'h' : item.durationMins+'m'}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderMonthView() {
-            const container = document.getElementById('month-grid');
-            let html = '';
-            for (let i = 1; i <= 35; i++) {
-                const dayNum = i <= 31 ? i : i - 31;
-                const isToday = i === 7;
-                html += `
-                    <div onclick="jumpToDayView()" class="p-2 border border-gray-100 dark:border-gray-800 rounded-xl bg-gray-50/50 dark:bg-gray-800/30 hover:bg-white dark:hover:bg-gray-800 smooth-transition cursor-pointer flex flex-col justify-between">
-                        <span class="text-xs font-bold ${isToday ? 'w-5 h-5 bg-google-blue text-white rounded-full flex items-center justify-center' : 'text-gray-600 dark:text-gray-400'}">${dayNum}</span>
-                        <div class="flex gap-1 flex-wrap">
-                            <span class="w-2 h-2 rounded-full bg-google-blue"></span>
-                            ${i % 3 === 0 ? '<span class="w-2 h-2 rounded-full bg-emerald-500"></span>' : ''}
-                        </div>
-                    </div>
-                `;
+            if (editId) {
+                const act = state.savedActivities.find(a => a.id === editId);
+                if (act) {
+                    document.getElementById('actNameInput').value = act.name;
+                    document.getElementById('actCategoryInput').value = act.category;
+                    document.getElementById('actDurationInput').value = act.duration;
+                    document.getElementById('actIconInput').value = act.icon;
+                }
+            } else {
+                document.getElementById('actNameInput').value = '';
+                document.getElementById('actCategoryInput').value = 'Academics';
+                document.getElementById('actDurationInput').value = 45;
+                document.getElementById('actIconInput').value = 'fa-book';
             }
-            container.innerHTML = html;
-        }
 
-        function jumpToDayView() {
-            switchView('daily');
-        }
-
-        function populateSettingsHourDropdowns() {
-            const startSelect = document.getElementById('settings-start-hour');
-            const endSelect = document.getElementById('settings-end-hour');
-            
-            let startHtml = '', endHtml = '';
-            for (let h = 0; h <= 23; h++) {
-                const ampm = h >= 12 ? 'PM' : 'AM';
-                const displayH = h % 12 === 0 ? 12 : h % 12;
-                startHtml += `<option value="${h}" ${h === state.settings.startHour ? 'selected' : ''}>${displayH}:00 ${ampm}</option>`;
-                endHtml += `<option value="${h}" ${h === state.settings.endHour ? 'selected' : ''}>${displayH}:00 ${ampm}</option>`;
-            }
-            startSelect.innerHTML = startHtml;
-            endSelect.innerHTML = endHtml;
-        }
-
-        function openSettingsModal() {
-            populateSettingsHourDropdowns();
-            document.getElementById('settings-interval-step').value = state.settings.intervalMins || 60;
-            document.getElementById('settings-modal').classList.remove('hidden');
-        }
-
-        function closeSettingsModal() {
-            document.getElementById('settings-modal').classList.add('hidden');
-        }
-
-        function saveSettings() {
-            state.settings.startHour = parseInt(document.getElementById('settings-start-hour').value);
-            state.settings.endHour = parseInt(document.getElementById('settings-end-hour').value);
-            state.settings.intervalMins = parseInt(document.getElementById('settings-interval-step').value);
-
-            closeSettingsModal();
-            saveStateToStorage();
-            renderGrid();
-        }
-
-        // --- NEW / EDIT SAVED ACTIVITY MODAL ---
-        function openNewActivityModal() {
-            document.getElementById('activity-modal-title').innerText = "New Saved Activity";
-            document.getElementById('act-edit-id').value = '';
-            document.getElementById('act-name').value = '';
-            document.getElementById('act-duration').value = 60;
-            document.getElementById('act-notes').value = '';
-
-            populateCategoryDropdown();
-            document.getElementById('activity-modal').classList.remove('hidden');
-        }
-
-        function populateCategoryDropdown() {
-            const sel = document.getElementById('act-category');
-            sel.innerHTML = Object.keys(state.categories).map(cat => `
-                <option value="${cat}">${cat}</option>
-            `).join('');
-            syncCategoryColor();
-        }
-
-        function syncCategoryColor() {
-            const cat = document.getElementById('act-category').value;
-            if (state.categories[cat]) {
-                document.getElementById('act-color').value = state.categories[cat].color;
-            }
-        }
-
-        function closeActivityModal() {
-            document.getElementById('activity-modal').classList.add('hidden');
+            document.getElementById('activityModal').classList.remove('hidden');
         }
 
         function handleSaveActivity(e) {
             e.preventDefault();
-            const editId = document.getElementById('act-edit-id').value;
-            const name = document.getElementById('act-name').value;
-            const category = document.getElementById('act-category').value;
-            const color = document.getElementById('act-color').value;
-            const duration = parseInt(document.getElementById('act-duration').value) || 60;
-            const notes = document.getElementById('act-notes').value;
+            const editId = document.getElementById('editActivityId').value;
+            const name = document.getElementById('actNameInput').value.trim();
+            const category = document.getElementById('actCategoryInput').value;
+            const duration = parseInt(document.getElementById('actDurationInput').value, 10);
+            const icon = document.getElementById('actIconInput').value.trim() || 'fa-tag';
 
             if (editId) {
                 const act = state.savedActivities.find(a => a.id === editId);
                 if (act) {
                     act.name = name;
                     act.category = category;
-                    act.color = color;
                     act.duration = duration;
-                    act.notes = notes;
+                    act.icon = icon;
                 }
             } else {
-                state.savedActivities.push({
-                    id: 'act-' + Date.now(),
-                    name, category, color, duration, notes
-                });
+                const newAct = {
+                    id: 'act_' + Date.now(),
+                    name,
+                    category,
+                    duration,
+                    icon
+                };
+                state.savedActivities.push(newAct);
             }
 
-            closeActivityModal();
-            saveStateToStorage();
-            renderLibrary();
+            saveState();
+            renderSidebar();
+            closeModal('activityModal');
+            showToast(editId ? "Activity updated" : "Saved activity created!");
         }
 
         function editActivity(id) {
-            const act = state.savedActivities.find(a => a.id === id);
-            if (!act) return;
-
-            document.getElementById('activity-modal-title').innerText = "Edit Saved Activity";
-            document.getElementById('act-edit-id').value = act.id;
-            document.getElementById('act-name').value = act.name;
-            document.getElementById('act-duration').value = act.duration;
-            document.getElementById('act-notes').value = act.notes || '';
-
-            populateCategoryDropdown();
-            document.getElementById('act-category').value = act.category;
-            document.getElementById('act-color').value = act.color;
-
-            document.getElementById('activity-modal').classList.remove('hidden');
+            openActivityModal(id);
         }
 
         function deleteActivity(id) {
             state.savedActivities = state.savedActivities.filter(a => a.id !== id);
-            saveStateToStorage();
-            renderLibrary();
+            saveState();
+            renderSidebar();
+            showToast("Activity deleted from library");
         }
 
-        // --- BLOCK EDIT MODAL ---
-        function openBlockEditModal(id) {
-            const item = state.scheduledItems.find(i => i.id === id);
-            if (!item) return;
-
-            document.getElementById('block-edit-id').value = item.id;
-            document.getElementById('block-edit-title').value = item.name;
-            document.getElementById('block-edit-duration').value = item.durationMins;
-            document.getElementById('block-edit-completed').checked = item.completed;
-
-            // Populate Start Time Dropdown
-            const sel = document.getElementById('block-edit-start');
-            let html = '';
-            for (let m = state.settings.startHour * 60; m <= state.settings.endHour * 60; m += 15) {
-                const h = Math.floor(m / 60);
-                const min = m % 60;
-                const ampm = h >= 12 ? 'PM' : 'AM';
-                const displayH = h % 12 === 0 ? 12 : h % 12;
-                const timeStr = `${displayH}:${min < 10 ? '0' : ''}${min} ${ampm}`;
-                html += `<option value="${m}" ${m === item.startMins ? 'selected' : ''}>${timeStr}</option>`;
-            }
-            sel.innerHTML = html;
-
-            document.getElementById('block-edit-modal').classList.remove('hidden');
+        function handleActivitySearch(val) {
+            state.activitySearchQuery = val;
+            renderSidebar();
         }
 
-        function closeBlockEditModal() {
-            document.getElementById('block-edit-modal').classList.add('hidden');
+        function setCategoryFilter(cat) {
+            state.activeCategoryFilter = cat;
+            renderSidebar();
         }
 
-        function handleSaveBlockEdit(e) {
+        function handleLogMeal(e) {
             e.preventDefault();
-            const id = document.getElementById('block-edit-id').value;
-            const item = state.scheduledItems.find(i => i.id === id);
-            if (item) {
-                item.name = document.getElementById('block-edit-title').value;
-                item.startMins = parseInt(document.getElementById('block-edit-start').value);
-                item.durationMins = parseInt(document.getElementById('block-edit-duration').value);
-                item.completed = document.getElementById('block-edit-completed').checked;
+            const name = document.getElementById('mealNameInput').value.trim();
+            const calories = parseInt(document.getElementById('mealCalInput').value, 10);
+            const protein = parseInt(document.getElementById('mealProteinInput').value || '0', 10);
+            const carbs = parseInt(document.getElementById('mealCarbsInput').value || '0', 10);
+            const fat = parseInt(document.getElementById('mealFatInput').value || '0', 10);
+
+            const newMeal = {
+                id: 'meal_' + Date.now(),
+                name,
+                calories,
+                protein,
+                carbs,
+                fat
+            };
+
+            state.loggedMeals.push(newMeal);
+            saveState();
+            renderFoodView();
+            e.target.reset();
+            showToast(`Logged "${name}" (${calories} kcal)`);
+        }
+
+        function deleteMeal(id) {
+            state.loggedMeals = state.loggedMeals.filter(m => m.id !== id);
+            saveState();
+            renderFoodView();
+            showToast("Meal removed");
+        }
+
+        function handleUpdateGoals(e) {
+            e.preventDefault();
+            state.nutritionGoals.calories = parseInt(document.getElementById('goalCalories').value, 10);
+            state.nutritionGoals.protein = parseInt(document.getElementById('goalProtein').value, 10);
+            state.nutritionGoals.carbs = parseInt(document.getElementById('goalCarbs').value, 10);
+            state.nutritionGoals.fat = parseInt(document.getElementById('goalFat').value, 10);
+
+            saveState();
+            renderFoodView();
+            showToast("Nutrition goals updated!");
+        }
+
+        function saveWeightLog() {
+            const val = document.getElementById('weightInput').value;
+            if (val) {
+                showToast(`Logged morning weight: ${val} kg`);
+            }
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settingStartHour').value = state.settings.startHour;
+            document.getElementById('settingEndHour').value = state.settings.endHour;
+            document.getElementById('settingSlotInterval').value = state.settings.slotInterval;
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function handleSaveSettings(e) {
+            e.preventDefault();
+            const sHour = parseInt(document.getElementById('settingStartHour').value, 10);
+            const eHour = parseInt(document.getElementById('settingEndHour').value, 10);
+            const interval = parseInt(document.getElementById('settingSlotInterval').value, 10);
+
+            if (sHour >= eHour) {
+                showToast("Start hour must be earlier than End hour", true);
+                return;
             }
 
-            closeBlockEditModal();
-            saveStateToStorage();
-            renderGrid();
+            state.settings.startHour = sHour;
+            state.settings.endHour = eHour;
+            state.settings.slotInterval = interval;
+
+            saveState();
+            closeModal('settingsModal');
+            renderCurrentView();
+            showToast("Schedule grid settings applied!");
         }
 
-        function deleteBlockItem() {
-            const id = document.getElementById('block-edit-id').value;
-            state.scheduledItems = state.scheduledItems.filter(i => i.id !== id);
-            closeBlockEditModal();
-            saveStateToStorage();
-            renderGrid();
+        function toggleTheme() {
+            state.settings.darkMode = !state.settings.darkMode;
+            if (state.settings.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            saveState();
         }
 
-        // --- CLEAR MODAL ---
-        function openClearModal() {
-            document.getElementById('clear-modal').classList.remove('hidden');
+        /* POMODORO TIMER TIMER LOGIC */
+        let pomoInterval = null;
+        let pomoSecondsLeft = 25 * 60;
+        let pomoTotalSeconds = 25 * 60;
+        let pomoIsRunning = false;
+
+        function openPomodoroModal() {
+            document.getElementById('pomodoroModal').classList.remove('hidden');
         }
 
-        function closeClearModal() {
-            document.getElementById('clear-modal').classList.add('hidden');
+        function togglePomodoro() {
+            const btn = document.getElementById('pomoStartBtn');
+            if (pomoIsRunning) {
+                clearInterval(pomoInterval);
+                pomoIsRunning = false;
+                btn.innerText = "Resume Session";
+                btn.className = "flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-red-500/20";
+                document.getElementById('pomoStatusText').innerText = "Paused";
+            } else {
+                const workMins = parseInt(document.getElementById('pomoWorkInput').value || '25', 10);
+                if (!pomoInterval && pomoSecondsLeft === pomoTotalSeconds) {
+                    pomoSecondsLeft = workMins * 60;
+                    pomoTotalSeconds = workMins * 60;
+                }
+                
+                pomoIsRunning = true;
+                btn.innerText = "Pause Session";
+                btn.className = "flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-amber-500/20";
+                document.getElementById('pomoStatusText').innerText = "Focusing...";
+
+                pomoInterval = setInterval(() => {
+                    pomoSecondsLeft--;
+                    updatePomoDisplay();
+
+                    if (pomoSecondsLeft <= 0) {
+                        clearInterval(pomoInterval);
+                        pomoIsRunning = false;
+                        playPomoSound();
+                        showToast("Pomodoro session completed! Time for a break.");
+                        document.getElementById('pomoStatusText').innerText = "Session Done!";
+                        btn.innerText = "Start Session";
+                    }
+                }, 1000);
+            }
         }
 
-        function confirmClearSchedule() {
-            state.scheduledItems = state.scheduledItems.filter(i => (i.dayIndex === undefined ? 2 : i.dayIndex) !== state.selectedDayIndex);
-            closeClearModal();
-            saveStateToStorage();
-            renderGrid();
+        function resetPomodoro() {
+            clearInterval(pomoInterval);
+            pomoIsRunning = false;
+            const workMins = parseInt(document.getElementById('pomoWorkInput').value || '25', 10);
+            pomoSecondsLeft = workMins * 60;
+            pomoTotalSeconds = workMins * 60;
+            updatePomoDisplay();
+            document.getElementById('pomoStartBtn').innerText = "Start Session";
+            document.getElementById('pomoStatusText').innerText = "Ready to Focus";
+        }
+
+        function updatePomoDisplay() {
+            const m = Math.floor(pomoSecondsLeft / 60).toString().padStart(2, '0');
+            const s = (pomoSecondsLeft % 60).toString().padStart(2, '0');
+            document.getElementById('pomoDisplay').innerText = `${m}:${s}`;
+
+            const ring = document.getElementById('pomoRing');
+            if (ring) {
+                const fraction = pomoSecondsLeft / pomoTotalSeconds;
+                const offset = 263.89 * (1 - fraction);
+                ring.style.strokeDashoffset = offset;
+            }
+        }
+
+        function playPomoSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5 tone
+                osc.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.5);
+            } catch (e) {}
         }
 
         function exportData() {
-            const jsonStr = JSON.stringify(state, null, 2);
-            const blob = new Blob([jsonStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `FlexSchedule_Backup_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `FlexSchedule_Backup_${new Date().toISOString().slice(0,10)}.json`);
+            dlAnchorElem.click();
+            showToast("Backup exported successfully!");
         }
 
-        function importDataTrigger() {
-            document.getElementById('import-file-input').click();
-        }
-
-        function handleImportFile(e) {
-            const file = e.target.files[0];
+        function importData(event) {
+            const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = function(e) {
                 try {
-                    const parsed = JSON.parse(event.target.result);
-                    state = { ...state, ...parsed };
-                    saveStateToStorage();
-                    location.reload();
-                } catch(err) {
-                    alert('Invalid JSON backup file.');
+                    const imported = JSON.parse(e.target.result);
+                    if (imported && typeof imported === 'object') {
+                        state = { ...state, ...imported };
+                        saveState();
+                        initApp();
+                        showToast("Data imported successfully!");
+                    }
+                } catch (err) {
+                    showToast("Failed to parse JSON backup file", true);
                 }
             };
             reader.readAsText(file);
         }
+
+        function confirmClearAll() {
+            document.getElementById('clearConfirmModal').classList.remove('hidden');
+        }
+
+        function executeClearAll() {
+            localStorage.removeItem(STORAGE_KEY);
+            state = {
+                currentView: 'daily',
+                selectedDayIndex: new Date().getDay() === 0 ? 6 : new Date().getDay() - 1,
+                currentMonthOffset: 0,
+                settings: { startHour: 7, endHour: 20, slotInterval: 30, darkMode: state.settings.darkMode },
+                savedActivities: [],
+                scheduledEvents: [], // Clean ZERO
+                loggedMeals: [],     // Clean ZERO
+                nutritionGoals: { calories: 2000, protein: 150, carbs: 220, fat: 65 },
+                weightLogs: [],
+                activeCategoryFilter: 'All',
+                activitySearchQuery: ''
+            };
+            saveState();
+            closeModal('clearConfirmModal');
+            initApp();
+            showToast("All data cleared!");
+        }
+
+        function refreshQuote() {
+            const random = DEFAULT_QUOTES[Math.floor(Math.random() * DEFAULT_QUOTES.length)];
+            document.getElementById('quoteText').innerText = `"${random.quote}"`;
+            document.getElementById('quoteAuthor').innerText = `- ${random.author}`;
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function showToast(msg, isError = false) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-2.5 rounded-xl shadow-lg text-xs font-bold text-white flex items-center space-x-2 pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0 ${isError ? 'bg-red-600' : 'bg-google-blue'}`;
+            toast.innerHTML = `
+                <i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i>
+                <span>${msg}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize application on window load
+        window.onload = function() {
+            initApp();
+        };
     </script>
 </body>
 </html>
